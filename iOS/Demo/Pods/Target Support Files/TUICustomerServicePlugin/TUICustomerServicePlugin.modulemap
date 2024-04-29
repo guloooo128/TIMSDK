@@ -1,0 +1,6 @@
+framework module TUICustomerServicePlugin {
+  umbrella header "TUICustomerServicePlugin-umbrella.h"
+
+  export *
+  module * { export * }
+}

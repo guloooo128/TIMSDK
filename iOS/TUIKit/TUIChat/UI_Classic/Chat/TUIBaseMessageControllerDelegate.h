@@ -54,7 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  @return Returns the new message unit that needs to be displayed.
  */
-- (TUIMessageCellData *)messageController:(TUIBaseMessageController *)controller onNewMessage:(V2TIMMessage *)message;
+@optional
+- (nullable TUIMessageCellData *)messageController:(TUIBaseMessageController *)controller onNewMessage:(V2TIMMessage *)message;
 
 /**
  *  Callback for displaying new message
@@ -65,7 +66,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  @return Returns the new message unit that needs to be displayed.。
  */
-- (TUIMessageCell *)messageController:(TUIBaseMessageController *)controller onShowMessageData:(TUIMessageCellData *)data;
+@optional
+- (nullable TUIMessageCell *)messageController:(TUIBaseMessageController *)controller onShowMessageData:(TUIMessageCellData *)data;
 
 /**
  *  The callback the cell will be displayed with

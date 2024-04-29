@@ -9,22 +9,22 @@ target 'TUIKitDemo' do
   use_modular_headers!
 
   # Pods for Example
-  pod 'TUIChat', '7.9.5666'
-  pod 'TIMCommon', '7.9.5666'
-  pod 'TUIConversation', '7.9.5666'
-  pod 'TUIContact', '7.9.5666'
-  pod 'TUIGroup', '7.9.5666'
-  pod 'TUISearch', '7.9.5666'
+  pod 'TUIChat', :path => "../TUIKit/TUIChat"
+  pod 'TIMCommon', :path => "../TUIKit/TIMCommon"
+  pod 'TUIConversation', :path => "../TUIKit/TUIConversation"
+  pod 'TUIContact', :path => "../TUIKit/TUIContact"
+  pod 'TUIGroup', :path => "../TUIKit/TUIGroup"
+  pod 'TUISearch', :path => "../TUIKit/TUISearch"
   pod 'TIMPush', '7.9.5666'
   pod 'TUIPollPlugin', '7.9.5666'
   pod 'TUIGroupNotePlugin', '7.9.5666'
-  pod 'TUITranslationPlugin', '7.9.5666'
+  pod 'TUITranslationPlugin', :path => "../TUIKit/TUITranslationPlugin"
   pod 'TUIConversationGroupPlugin', '7.9.5666'
   pod 'TUIConversationMarkPlugin', '7.9.5666'
-  pod 'TUIVoiceToTextPlugin', '7.9.5666'
-  pod 'TUICustomerServicePlugin', '7.9.5666'
-  pod 'TUIChatBotPlugin', '7.9.5666'
-  pod 'TUIEmojiPlugin', '7.9.5666'
+  pod 'TUIVoiceToTextPlugin', :path => "../TUIKit/TUIVoiceToTextPlugin"
+  pod 'TUICustomerServicePlugin', :path => "../TUIKit/TUICustomerServicePlugin"
+  pod 'TUIChatBotPlugin', :path => "../TUIKit/TUIChatBotPlugin"
+  pod 'TUIEmojiPlugin', :path => "../TUIKit/TUIEmojiPlugin"
   pod 'TUICallKit'
   pod 'TUIRoomKit'
   pod 'MJRefresh'

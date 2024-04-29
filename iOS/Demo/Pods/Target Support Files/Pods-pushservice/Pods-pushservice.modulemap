@@ -1,0 +1,6 @@
+framework module Pods_pushservice {
+  umbrella header "Pods-pushservice-umbrella.h"
+
+  export *
+  module * { export * }
+}

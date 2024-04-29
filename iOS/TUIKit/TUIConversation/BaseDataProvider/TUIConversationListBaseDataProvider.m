@@ -18,10 +18,10 @@
 #define kLog(...) NSLog(__VA_ARGS__)
 
 @interface TUIConversationListBaseDataProvider () <V2TIMConversationListener,
-                                                   V2TIMGroupListener,
-                                                   V2TIMSDKListener,
-                                                   V2TIMAdvancedMsgListener,
-                                                   TUINotificationProtocol>
+V2TIMGroupListener,
+V2TIMSDKListener,
+V2TIMAdvancedMsgListener,
+TUINotificationProtocol>
 @property(nonatomic, strong) NSMutableArray<TUIConversationCellData *> *conversationList;
 @property(nonatomic, assign, getter=isLastPage) BOOL lastPage;
 
@@ -40,12 +40,12 @@
         self.pageSize = kPageSize;
         self.lastPage = NO;
         self.filter = [[V2TIMConversationListFilter alloc] init];
-
+        
         [[V2TIMManager sharedInstance] addConversationListener:self];
         [[V2TIMManager sharedInstance] addGroupListener:self];
         [[V2TIMManager sharedInstance] addIMSDKListener:self];
         [[V2TIMManager sharedInstance] addAdvancedMsgListener:self];
-
+        
         [TUICore registerEvent:TUICore_TUIConversationNotify subKey:TUICore_TUIConversationNotify_RemoveConversationSubKey object:self];
     }
     return self;
@@ -56,27 +56,41 @@
         return;
     }
     @weakify(self);
-    [V2TIMManager.sharedInstance getConversationListByFilter:self.filter
-        nextSeq:self.pageIndex
-        count:(int)self.pageSize
-        succ:^(NSArray<V2TIMConversation *> *list, uint64_t nextSeq, BOOL isFinished) {
-          @strongify(self);
-          self.pageIndex = nextSeq;
-          self.lastPage = isFinished;
-          [self preprocess:list];
-        }
-        fail:^(int code, NSString *desc) {
-          @strongify(self);
-          self.lastPage = YES;
-          kLog(@"[TUIConversation] %s, code:%d, desc:%@", __func__, code, desc);
-        }];
+    [V2TIMManager.sharedInstance getConversationList:self.pageIndex count:(int)self.pageSize succ:^(NSArray<V2TIMConversation *> *list, uint64_t nextSeq, BOOL isFinished) {
+        @strongify(self);
+        self.pageIndex = nextSeq;
+        self.lastPage = isFinished;
+        [self preprocess:list];
+    } fail:^(int code, NSString *desc) {
+        @strongify(self);
+        self.lastPage = YES;
+        kLog(@"[TUIConversation] %s, code:%d, desc:%@", __func__, code, desc);
+    }];
+    
+//    [V2TIMManager.sharedInstance getConversationListByFilter:self.filter
+//                                                     nextSeq:self.pageIndex
+//                                                       count:(int)self.pageSize
+//                                                        succ:^(NSArray<V2TIMConversation *> *list, uint64_t nextSeq, BOOL isFinished) {
+//        @strongify(self);
+//        self.pageIndex = nextSeq;
+//        self.lastPage = isFinished;
+////        NSError *error = nil;
+////        NSDictionary *param = [NSJSONSerialization JSONObjectWithData:list.firstObject.lastMessage.customElem.data options:NSJSONReadingAllowFragments error:&error];
+////        NSString *string = [[NSString alloc] initWithData:list.firstObject.customData encoding:NSUTF8StringEncoding];
+//        [self preprocess:list];
+//    }
+//                                                        fail:^(int code, NSString *desc) {
+//        @strongify(self);
+//        self.lastPage = YES;
+//        kLog(@"[TUIConversation] %s, code:%d, desc:%@", __func__, code, desc);
+//    }];
 }
 
 - (void)addConversationList:(NSArray<TUIConversationCellData *> *)conversationList {
     if (!NSThread.isMainThread) {
         __weak typeof(self) weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-          [weakSelf addConversationList:conversationList];
+            [weakSelf addConversationList:conversationList];
         });
         return;
     }
@@ -87,7 +101,7 @@
     if (!NSThread.isMainThread) {
         __weak typeof(self) weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-          [weakSelf removeConversation:conversation];
+            [weakSelf removeConversation:conversation];
         });
         return;
     }
@@ -98,7 +112,7 @@
     if (!NSThread.isMainThread) {
         __weak typeof(self) weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-          [weakSelf clearHistoryMessage:conversation];
+            [weakSelf clearHistoryMessage:conversation];
         });
         return;
     }
@@ -113,7 +127,7 @@
     if (!NSThread.isMainThread) {
         __weak typeof(self) weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-          [weakSelf pinConversation:conversation pin:pin];
+            [weakSelf pinConversation:conversation pin:pin];
         });
         return;
     }
@@ -124,7 +138,7 @@
     if (!NSThread.isMainThread) {
         __weak typeof(self) weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-          [weakSelf hideConversation:conversation];
+            [weakSelf hideConversation:conversation];
         });
         return;
     }
@@ -136,28 +150,28 @@
     if (!NSThread.isMainThread) {
         __weak typeof(self) weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-          [weakSelf preprocess:v2Convs];
+            [weakSelf preprocess:v2Convs];
         });
         return;
     }
-
+    
     NSMutableDictionary<NSString *, NSNumber *> *conversationMap = [NSMutableDictionary dictionary];
     for (TUIConversationCellData *item in self.conversationList) {
         if (item.conversationID) {
             [conversationMap setObject:@([self.conversationList indexOfObject:item]) forKey:item.conversationID];
         }
     }
-
+    
     NSMutableArray *duplicateDataList = [NSMutableArray array];
     NSMutableArray *addedDataList = [NSMutableArray array];
     NSMutableArray *markHideDataList = [NSMutableArray array];
     NSMutableArray *markFoldDataList = [NSMutableArray array];
-
+    
     for (V2TIMConversation *conv in v2Convs) {
         if ([self filteConversation:conv]) {
             continue;
         }
-
+        
         TUIConversationCellData *cellData = [self cellDataForConversation:conv];
         if ([self.markHideMap objectForKey:cellData.conversationID]) {
             if (![TUIConversationCellData isMarkedByHideType:conv.markList]) {
@@ -168,7 +182,7 @@
                 [self.markHideMap setObject:cellData forKey:cellData.conversationID];
             }
         }
-
+        
         if ([self.markFoldMap objectForKey:cellData.conversationID]) {
             if (![TUIConversationCellData isMarkedByFoldType:conv.markList]) {
                 [self.markFoldMap removeObjectForKey:cellData.conversationID];
@@ -178,7 +192,7 @@
                 [self.markFoldMap setObject:cellData forKey:cellData.conversationID];
             }
         }
-
+        
         if ([TUIConversationCellData isMarkedByHideType:conv.markList] || [TUIConversationCellData isMarkedByFoldType:conv.markList]) {
             if ([TUIConversationCellData isMarkedByHideType:conv.markList]) {
                 [markHideDataList addObject:cellData];
@@ -188,14 +202,14 @@
             }
             continue;
         }
-
+        
         if ([conversationMap objectForKey:cellData.conversationID]) {
             [duplicateDataList addObject:cellData];
         } else {
             [addedDataList addObject:cellData];
         }
         if ([self.markUnreadMap objectForKey:cellData.conversationID]) {
-            //   
+            //
             // This is an operation to cancel the unread mark operation or to be cleaned away by a new message from someone else
             if (![TUIConversationCellData isMarkedByUnReadType:conv.markList]) {
                 [self.markUnreadMap removeObjectForKey:cellData.conversationID];
@@ -206,15 +220,15 @@
             }
         }
     }
-
+    
     if (markFoldDataList.count) {
         __block TUIConversationCellData *cellRecent = nil;
         [markFoldDataList enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
-          TUIConversationCellData *cellData = (TUIConversationCellData *)obj;
-          if (!cellData.isMarkAsHide) {
-              cellRecent = cellData;
-              *stop = YES;
-          }
+            TUIConversationCellData *cellData = (TUIConversationCellData *)obj;
+            if (!cellData.isMarkAsHide) {
+                cellRecent = cellData;
+                *stop = YES;
+            }
         }];
         if (IS_NOT_EMPTY_NSSTRING([cellRecent.foldSubTitle string])) {
             if (cellRecent.orderKey > self.conversationFoldListData.orderKey) {
@@ -231,7 +245,7 @@
             self.conversationFoldListData.subTitle = cellRecent.foldSubTitle;
             self.conversationFoldListData.orderKey = cellRecent.orderKey;
         }
-
+        
         if (![self.class getConversationFoldListSettings_HideFoldItem]) {
             if ([conversationMap objectForKey:self.conversationFoldListData.conversationID]) {
                 [duplicateDataList addObject:self.conversationFoldListData];
@@ -243,21 +257,21 @@
     } else {
         [self updateFoldGroupNameWhileKickOffOrDismissed];
     }
-
+    
     if (duplicateDataList.count) {
         [self sortDataList:duplicateDataList];
         [self handleUpdateConversationList:duplicateDataList positions:conversationMap];
     }
-
+    
     if (addedDataList.count) {
         [self sortDataList:addedDataList];
         [self handleInsertConversationList:addedDataList];
     }
-
+    
     [self updateMardHide:markHideDataList];
-
+    
     [self updateMarkUnreadCount];
-
+    
     [self updateMarkFold:markFoldDataList];
 }
 - (void)updateMardHide:(NSMutableArray *) markHideDataList {
@@ -284,33 +298,33 @@
 - (void)updateMarkUnreadCount {
     __block NSInteger markUnreadCount = 0;
     [self.markUnreadMap enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull key, TUIConversationCellData *_Nonnull obj, BOOL *_Nonnull stop) {
-      if (!obj.isNotDisturb) {
-          markUnreadCount++;
-      }
+        if (!obj.isNotDisturb) {
+            markUnreadCount++;
+        }
     }];
-
+    
     __block NSInteger markHideUnreadCount = 0;
     [self.markHideMap enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull key, TUIConversationCellData *_Nonnull obj, BOOL *_Nonnull stop) {
-      if (obj && [obj isKindOfClass:TUIConversationCellData.class]) {
-          if (!obj.isNotDisturb) {
-              if (obj.isMarkAsUnread) {
-                  markHideUnreadCount = markHideUnreadCount + 1;
-              } else {
-                  markHideUnreadCount = markHideUnreadCount + obj.unreadCount;
-              }
-          }
-      }
+        if (obj && [obj isKindOfClass:TUIConversationCellData.class]) {
+            if (!obj.isNotDisturb) {
+                if (obj.isMarkAsUnread) {
+                    markHideUnreadCount = markHideUnreadCount + 1;
+                } else {
+                    markHideUnreadCount = markHideUnreadCount + obj.unreadCount;
+                }
+            }
+        }
     }];
-
+    
     [[NSNotificationCenter defaultCenter]
-        postNotificationName:TUIKitNotification_onConversationMarkUnreadCountChanged
-                      object:nil
-                    userInfo:@{
-                        TUIKitNotification_onConversationMarkUnreadCountChanged_DataProvider : self,
-                        TUIKitNotification_onConversationMarkUnreadCountChanged_MarkUnreadCount : [NSNumber numberWithInteger:markUnreadCount],
-                        TUIKitNotification_onConversationMarkUnreadCountChanged_MarkHideUnreadCount : [NSNumber numberWithInteger:markHideUnreadCount],
-                        TUIKitNotification_onConversationMarkUnreadCountChanged_MarkUnreadMap : self.markUnreadMap,
-                    }];
+     postNotificationName:TUIKitNotification_onConversationMarkUnreadCountChanged
+     object:nil
+     userInfo:@{
+        TUIKitNotification_onConversationMarkUnreadCountChanged_DataProvider : self,
+        TUIKitNotification_onConversationMarkUnreadCountChanged_MarkUnreadCount : [NSNumber numberWithInteger:markUnreadCount],
+        TUIKitNotification_onConversationMarkUnreadCountChanged_MarkHideUnreadCount : [NSNumber numberWithInteger:markHideUnreadCount],
+        TUIKitNotification_onConversationMarkUnreadCountChanged_MarkUnreadMap : self.markUnreadMap,
+    }];
 }
 - (void)updateMarkFold:(NSMutableArray *) markFoldDataList {
     if (markFoldDataList.count) {
@@ -354,7 +368,7 @@
     if (0 == conversationList.count) {
         return;
     }
-
+    
     for (TUIConversationCellData *item in conversationList) {
         if (item.isLocalConversationFoldList){
             continue;
@@ -367,19 +381,19 @@
             [self.conversationList replaceObjectAtIndex:[position integerValue] withObject:item];
         }
     }
-
+    
     [self sortDataList:self.conversationList];
-
+    
     NSInteger minIndex = self.conversationList.count - 1;
     NSInteger maxIndex = 0;
-
+    
     NSMutableDictionary<NSString *, TUIConversationCellData *> *conversationMap = [NSMutableDictionary dictionary];
     for (TUIConversationCellData *item in self.conversationList) {
         if (item.conversationID) {
             [conversationMap setObject:item forKey:item.conversationID];
         }
     }
-
+    
     for (TUIConversationCellData *cellData in conversationList) {
         TUIConversationCellData *item = [conversationMap objectForKey:cellData.conversationID];
         if (item) {
@@ -389,11 +403,11 @@
             maxIndex = maxIndex > MAX(previous, current) ? maxIndex : MAX(previous, current);
         }
     }
-
+    
     if (minIndex > maxIndex) {
         return;
     }
-
+    
     NSMutableArray *indexPaths = [NSMutableArray array];
     for (NSInteger index = minIndex; index < maxIndex + 1; index++) {
         [indexPaths addObject:[NSIndexPath indexPathForRow:index inSection:0]];
@@ -413,9 +427,9 @@
         @weakify(self);
         [[V2TIMManager sharedInstance] deleteConversation:conversation.conversationID
                                                      succ:^{
-                                                       @strongify(self);
-                                                       [self updateMarkUnreadCount];
-                                                     }
+            @strongify(self);
+            [self updateMarkUnreadCount];
+        }
                                                      fail:nil];
     }
 }
@@ -431,7 +445,7 @@
 }
 - (void)sortDataList:(NSMutableArray<TUIConversationCellData *> *)dataList {
     [dataList sortUsingComparator:^NSComparisonResult(TUIConversationCellData *obj1, TUIConversationCellData *obj2) {
-      return obj1.orderKey < obj2.orderKey;
+        return obj1.orderKey < obj2.orderKey;
     }];
 }
 
@@ -455,10 +469,10 @@
         @weakify(self);
         [[V2TIMManager sharedInstance] deleteConversation:cellData.conversationID
                                                      succ:^{
-                                                       @strongify(self);
-                                                       [self.markFoldMap removeObjectForKey:conversationID];
-                                                       [self updateFoldGroupNameWhileKickOffOrDismissed];
-                                                     }
+            @strongify(self);
+            [self.markFoldMap removeObjectForKey:conversationID];
+            [self updateFoldGroupNameWhileKickOffOrDismissed];
+        }
                                                      fail:nil];
     }
 }
@@ -466,18 +480,18 @@
 - (void)updateFoldGroupNameWhileKickOffOrDismissed {
     __block TUIConversationCellData *cellRecent = nil;
     [self.markFoldMap enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull key, TUIConversationCellData *_Nonnull obj, BOOL *_Nonnull stop) {
-      TUIConversationCellData *cellData = (TUIConversationCellData *)obj;
-      if (!cellData.isMarkAsHide) {
-          if (!cellRecent) {
-              cellRecent = cellData;
-          } else {
-              if (cellData.orderKey > cellRecent.orderKey) {
-                  cellRecent = cellData;
-              }
-          }
-      }
+        TUIConversationCellData *cellData = (TUIConversationCellData *)obj;
+        if (!cellData.isMarkAsHide) {
+            if (!cellRecent) {
+                cellRecent = cellData;
+            } else {
+                if (cellData.orderKey > cellRecent.orderKey) {
+                    cellRecent = cellData;
+                }
+            }
+        }
     }];
-
+    
     if (cellRecent) {
         if (IS_NOT_EMPTY_NSSTRING([cellRecent.foldSubTitle string])) {
             self.conversationFoldListData.subTitle = cellRecent.foldSubTitle;
@@ -514,9 +528,9 @@
                 @weakify(self);
                 [[V2TIMManager sharedInstance] deleteConversation:conversationID
                                                              succ:^{
-                                                               @strongify(self);
-                                                               [self updateMarkUnreadCount];
-                                                             }
+                    @strongify(self);
+                    [self updateMarkUnreadCount];
+                }
                                                              fail:nil];
             }
         }
@@ -527,15 +541,15 @@
     if (conversationList.count == 0) {
         return;
     }
-
+    
     if (!NSThread.isMainThread) {
         __weak typeof(self) weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-          [weakSelf updateOnlineStatus:conversationList];
+            [weakSelf updateOnlineStatus:conversationList];
         });
         return;
     }
-
+    
     // reset
     NSMutableArray *userIDList = [NSMutableArray array];
     NSMutableDictionary *positionMap = [NSMutableDictionary dictionary];
@@ -551,7 +565,7 @@
         }
     }
     [self handleUpdateConversationList:conversationList positions:positionMap];
-
+    
     // fetch
     [self asyncGetOnlineStatus:userIDList];
 }
@@ -560,46 +574,46 @@
     if (userIDList.count == 0) {
         return;
     }
-
+    
     if (NSThread.isMainThread) {
         @weakify(self);
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
-          @strongify(self);
-          [self asyncGetOnlineStatus:userIDList];
+            @strongify(self);
+            [self asyncGetOnlineStatus:userIDList];
         });
         return;
     }
-
+    
     // get
     @weakify(self);
     [V2TIMManager.sharedInstance getUserStatus:userIDList
-        succ:^(NSArray<V2TIMUserStatus *> *result) {
-          @strongify(self);
-          [self handleOnlineStatus:result];
-        }
-        fail:^(int code, NSString *desc) {
+                                          succ:^(NSArray<V2TIMUserStatus *> *result) {
+        @strongify(self);
+        [self handleOnlineStatus:result];
+    }
+                                          fail:^(int code, NSString *desc) {
 #if DEBUG
-          if (code == ERR_SDK_INTERFACE_NOT_SUPPORT && TUIConfig.defaultConfig.displayOnlineStatusIcon) {
-              [TUITool makeToast:desc];
-          }
+        if (code == ERR_SDK_INTERFACE_NOT_SUPPORT && TUIConfig.defaultConfig.displayOnlineStatusIcon) {
+            [TUITool makeToast:desc];
+        }
 #endif
-        }];
-
+    }];
+    
     // subscribe for the users who was deleted from friend list
     [V2TIMManager.sharedInstance subscribeUserStatus:userIDList
                                                 succ:^{
-
-                                                }
+        
+    }
                                                 fail:^(int code, NSString *desc){
-
-                                                }];
+        
+    }];
 }
 
 - (void)handleOnlineStatus:(NSArray<V2TIMUserStatus *> *)userStatusList {
     if (!NSThread.isMainThread) {
         __weak typeof(self) weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-          [weakSelf handleOnlineStatus:userStatusList];
+            [weakSelf handleOnlineStatus:userStatusList];
         });
         return;
     }
@@ -610,7 +624,7 @@
             [positonMap setObject:@([self.conversationList indexOfObject:item]) forKey:item.conversationID];
         }
     }
-
+    
     NSMutableArray *changedConversation = [NSMutableArray array];
     for (V2TIMUserStatus *item in userStatusList) {
         NSString *conversationID = [NSString stringWithFormat:@"c2c_%@", item.userID];
@@ -636,7 +650,7 @@
         }
         [changedConversation addObject:conversation];
     }
-
+    
     if (changedConversation.count > 0) {
         [self handleUpdateConversationList:changedConversation positions:positonMap];
     }
@@ -661,7 +675,7 @@
                 if (self.delegate && [self.delegate respondsToSelector:@selector(deleteConversationAtIndexPaths:)]) {
                     [self.delegate deleteConversationAtIndexPaths:@[ [NSIndexPath indexPathForRow:index inSection:0] ]];
                 }
-            
+                
             }
         }
     }
@@ -699,13 +713,13 @@
     if (kicked == NO) {
         return;
     }
-
+    
     TUIConversationCellData *data = [self cellDataOfGroupID:groupID];
     if (data == nil) {
         [self dealFoldcellDataOfGroupID:groupID];
         return;
     }
-
+    
     [TUITool makeToast:[NSString stringWithFormat:TIMCommonLocalizableString(TUIKitGroupKickOffTipsFormat), data.groupID]];
     [self handleRemoveConversation:data];
 }
@@ -728,12 +742,12 @@
     __weak typeof(self) weakSelf = self;
     NSString *conversationID = [NSString stringWithFormat:@"group_%@", groupID];
     [V2TIMManager.sharedInstance getConversation:conversationID
-        succ:^(V2TIMConversation *conv) {
-          [weakSelf preprocess:@[ conv ]];
-        }
-        fail:^(int code, NSString *desc) {
-          kLog(@"[TUIConversation] %s, code:%d, desc:%@", __func__, code, desc);
-        }];
+                                            succ:^(V2TIMConversation *conv) {
+        [weakSelf preprocess:@[ conv ]];
+    }
+                                            fail:^(int code, NSString *desc) {
+        kLog(@"[TUIConversation] %s, code:%d, desc:%@", __func__, code, desc);
+    }];
 }
 
 #pragma mark - V2TIMSDKListener
@@ -751,14 +765,14 @@
     NSString *userID = msg.userID;
     NSString *groupID = msg.groupID;
     NSString *conversationID = @"";
-
+    
     if ([self.class isTypingBusinessMessage:msg]) {
         return;
     }
     if (IS_NOT_EMPTY_NSSTRING(userID)) {
         conversationID = [NSString stringWithFormat:@"c2c_%@", userID];
     }
-
+    
     if (IS_NOT_EMPTY_NSSTRING(groupID)) {
         conversationID = [NSString stringWithFormat:@"group_%@", groupID];
     }
@@ -774,56 +788,56 @@
         BOOL existInHidelist = targetCellData.isMarkAsHide;
         
         BOOL existInUnreadlist = targetCellData.isMarkAsUnread;
-
+        
         if (existInHidelist || existInUnreadlist) {
             [self cancelHideAndUnreadMarkConversation:conversationID existInHidelist:existInHidelist existInUnreadlist:existInUnreadlist];
         }
     }
     else {
         [V2TIMManager.sharedInstance getConversation:conversationID
-            succ:^(V2TIMConversation *conv) {
+                                                succ:^(V2TIMConversation *conv) {
             TUIConversationCellData *cellData = [self cellDataForConversation:conv];
             BOOL existInHidelist = cellData.isMarkAsHide;
             
             BOOL existInUnreadlist = cellData.isMarkAsUnread;
-
+            
             if (existInHidelist || existInUnreadlist) {
                 [self cancelHideAndUnreadMarkConversation:conversationID existInHidelist:existInHidelist existInUnreadlist:existInUnreadlist];
             }
-
-            }
-            fail:^(int code, NSString *desc) {
-              kLog(@"[TUIConversation] %s, code:%d, desc:%@", __func__, code, desc);
-            }];
+            
+        }
+                                                fail:^(int code, NSString *desc) {
+            kLog(@"[TUIConversation] %s, code:%d, desc:%@", __func__, code, desc);
+        }];
     }
-
+    
 }
 - (void)cancelHideAndUnreadMarkConversation:(NSString *)conversationID existInHidelist:(BOOL)existInHidelist existInUnreadlist:(BOOL)existInUnreadlist  {
     if(existInHidelist && existInUnreadlist) {
         [V2TIMManager.sharedInstance markConversation:@[ conversationID ]
-            markType:@(V2TIM_CONVERSATION_MARK_TYPE_HIDE)
-            enableMark:NO
-            succ:^(NSArray<V2TIMConversationOperationResult *> *result) {
-              [V2TIMManager.sharedInstance markConversation:@[ conversationID ]
-                                                   markType:@(V2TIM_CONVERSATION_MARK_TYPE_UNREAD)
-                                                 enableMark:NO
-                                                       succ:nil
-                                                       fail:^(int code, NSString *desc) {
-                                                         kLog(@"[TUIConversation] %s code:%d, desc:%@", __func__, code, desc);
-                                                       }];
-            }
-            fail:^(int code, NSString *desc) {
-              kLog(@"[TUIConversation] %s code:%d, desc:%@", __func__, code, desc);
+                                             markType:@(V2TIM_CONVERSATION_MARK_TYPE_HIDE)
+                                           enableMark:NO
+                                                 succ:^(NSArray<V2TIMConversationOperationResult *> *result) {
+            [V2TIMManager.sharedInstance markConversation:@[ conversationID ]
+                                                 markType:@(V2TIM_CONVERSATION_MARK_TYPE_UNREAD)
+                                               enableMark:NO
+                                                     succ:nil
+                                                     fail:^(int code, NSString *desc) {
+                kLog(@"[TUIConversation] %s code:%d, desc:%@", __func__, code, desc);
             }];
+        }
+                                                 fail:^(int code, NSString *desc) {
+            kLog(@"[TUIConversation] %s code:%d, desc:%@", __func__, code, desc);
+        }];
     }
     else if (existInHidelist)  {
         [V2TIMManager.sharedInstance markConversation:@[ conversationID ]
-            markType:@(V2TIM_CONVERSATION_MARK_TYPE_HIDE)
-            enableMark:NO
-            succ:nil
-            fail:^(int code, NSString *desc) {
-              kLog(@"[TUIConversation] %s code:%d, desc:%@", __func__, code, desc);
-            }];
+                                             markType:@(V2TIM_CONVERSATION_MARK_TYPE_HIDE)
+                                           enableMark:NO
+                                                 succ:nil
+                                                 fail:^(int code, NSString *desc) {
+            kLog(@"[TUIConversation] %s code:%d, desc:%@", __func__, code, desc);
+        }];
     }
     else if (existInUnreadlist) {
         [V2TIMManager.sharedInstance markConversation:@[ conversationID ]
@@ -831,8 +845,8 @@
                                            enableMark:NO
                                                  succ:nil
                                                  fail:^(int code, NSString *desc) {
-                                                   kLog(@"[TUIConversation] %s code:%d, desc:%@", __func__, code, desc);
-                                                 }];
+            kLog(@"[TUIConversation] %s code:%d, desc:%@", __func__, code, desc);
+        }];
     }
     else {
         // noting to do
@@ -843,27 +857,27 @@
 
 - (void)handleClearGroupHistoryMessage:(NSString *)groupID {
     [V2TIMManager.sharedInstance clearGroupHistoryMessage:groupID
-        succ:^{
-          kLog(@"[TUIConversation] %s success", __func__);
-        }
-        fail:^(int code, NSString *desc) {
-          kLog(@"[TUIConversation] %s code:%d, desc:%@", __func__, code, desc);
-        }];
+                                                     succ:^{
+        kLog(@"[TUIConversation] %s success", __func__);
+    }
+                                                     fail:^(int code, NSString *desc) {
+        kLog(@"[TUIConversation] %s code:%d, desc:%@", __func__, code, desc);
+    }];
 }
 
 - (void)handleClearC2CHistoryMessage:(NSString *)userID {
     [V2TIMManager.sharedInstance clearC2CHistoryMessage:userID
-        succ:^{
-          kLog(@"[TUIConversation] %s success", __func__);
-        }
-        fail:^(int code, NSString *desc) {
-          kLog(@"[TUIConversation] %s code:%d, desc:%@", __func__, code, desc);
-        }];
+                                                   succ:^{
+        kLog(@"[TUIConversation] %s success", __func__);
+    }
+                                                   fail:^(int code, NSString *desc) {
+        kLog(@"[TUIConversation] %s code:%d, desc:%@", __func__, code, desc);
+    }];
 }
 
 - (void)handlePinConversation:(TUIConversationCellData *)conversation pin:(BOOL)pin {
     dispatch_async(dispatch_get_main_queue(), ^{
-      [V2TIMManager.sharedInstance pinConversation:conversation.conversationID isPinned:pin succ:nil fail:nil];
+        [V2TIMManager.sharedInstance pinConversation:conversation.conversationID isPinned:pin succ:nil fail:nil];
     });
 }
 
@@ -908,26 +922,26 @@
     NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:@""];
     NSDictionary *attributeDict = @{NSForegroundColorAttributeName : [UIColor d_systemRedColor]};
     [attributeString setAttributes:attributeDict range:NSMakeRange(0, attributeString.length)];
-
+    
     NSString *showName = [NSString stringWithFormat:@"%@: ", conversation.showName];
     [attributeString appendAttributedString:[[NSAttributedString alloc] initWithString:showName]];
-
+    
     NSString *lastMsgStr = @"";
-
+    
     /**
      * Attempt to get externally customized display information
      */
     if (self.delegate && [self.delegate respondsToSelector:@selector(getConversationDisplayString:)]) {
         lastMsgStr = [self.delegate getConversationDisplayString:conversation];
     }
-
+    
     /**
      * If there is no external customization, get the lastMsg display information through the message module
      */
     if (lastMsgStr.length == 0 && conversation.lastMessage) {
         lastMsgStr = [self getDisplayStringFromService:conversation.lastMessage];
     }
-
+    
     /**
      * If there is no lastMsg display information and no draft information, return nil directly
      */
@@ -1004,7 +1018,7 @@
     if (draft.length == 0) {
         return nil;
     }
-
+    
     NSError *error = nil;
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:[draft dataUsingEncoding:NSUTF8StringEncoding]
                                                              options:NSJSONReadingMutableLeaves
@@ -1012,7 +1026,7 @@
     if (error || jsonDict == nil) {
         return draft;
     }
-
+    
     NSString *draftContent = [jsonDict.allKeys containsObject:@"content"] ? jsonDict[@"content"] : @"";
     return draftContent;
 }
@@ -1021,19 +1035,19 @@
     if (conversation.conversationID.length == 0) {
         return YES;
     }
-
+    
     if (conversation.userID.length == 0 && conversation.groupID.length == 0) {
         return YES;
     }
-
+    
     if (conversation.type == V2TIM_UNKNOWN) {
         return YES;
     }
-
+    
     if ([conversation.groupType isEqualToString:@"AVChatRoom"]) {
         return YES;
     }
-
+    
     if ([self getLastDisplayDate:conversation] == nil) {
         if (conversation.unreadCount != 0) {
             /**
@@ -1049,13 +1063,13 @@
 
 - (void)markConversationHide:(TUIConversationCellData *)data {
     [self handleHideConversation:data];
-
+    
     [V2TIMManager.sharedInstance markConversation:@[ data.conversationID ] markType:@(V2TIM_CONVERSATION_MARK_TYPE_HIDE) enableMark:YES succ:nil fail:nil];
 }
 
 - (void)markConversationAsRead:(TUIConversationCellData *)conv {
     [[V2TIMManager sharedInstance] cleanConversationUnreadMessageCount:conv.conversationID cleanTimestamp:0 cleanSequence:0 succ:nil fail:nil];
-
+    
     [V2TIMManager.sharedInstance markConversation:@[ conv.conversationID ] markType:@(V2TIM_CONVERSATION_MARK_TYPE_UNREAD) enableMark:NO succ:nil fail:nil];
 }
 

@@ -24,6 +24,7 @@ enum ERROR_CODE {
     ERR_SDK_NOT_INITIALIZED                     = 6013,    ///< IM SDK 未初始化，初始化成功回调之后重试。
     ERR_LOADMSG_FAILED                          = 6005,    ///< 加载本地数据库操作失败，可能存储文件有损坏，可 [提交工单](https://console.cloud.tencent.com/workorder/category?level1_id=29&level2_id=40&source=0&data_title=%E4%BA%91%E9%80%9A%E4%BF%A1%20%20IM&step=1) 联系客服定位具体问题。
     ERR_DATABASE_OPERATE_FAILED                 = 6019,    ///< 本地数据库操作失败，可能是部分目录无权限或者数据库文件已损坏。
+    ERR_HTTP_NO_CLEARTEXT_TRAFFIC_PERMISSION    = 6029,    ///< 无 http 协议的访问权限，iOS 9.0 和 Android P 开始默认限制 http 协议，iOS 平台可配置 NSAppTransportSecurity 选项，Android 平台可配置 cleartextTrafficPermitted 选项，取消 http 协议的限制。
     ERR_SDK_COMM_CROSS_THREAD                   = 7001,    ///< 跨线程错误，不能在跨越不同线程中执行，内部错误，可 [提交工单](https://console.cloud.tencent.com/workorder/category?level1_id=29&level2_id=40&source=0&data_title=%E4%BA%91%E9%80%9A%E4%BF%A1%20%20IM&step=1) 提供使用接口、错误码、错误信息给客服解决。
     ERR_SDK_COMM_TINYID_EMPTY                   = 7002,    ///< TinyId 为空，内部错误，可 [提交工单](https://console.cloud.tencent.com/workorder/category?level1_id=29&level2_id=40&source=0&data_title=%E4%BA%91%E9%80%9A%E4%BF%A1%20%20IM&step=1) 提供使用接口、错误码、错误信息给客服解决。
     ERR_SDK_COMM_INVALID_IDENTIFIER             = 7003,    ///< Identifier 非法，必须不为空，要求可打印 ASCII 字符（0x20-0x7e），长度不超过32字节。
@@ -34,13 +35,14 @@ enum ERROR_CODE {
     ERR_SDK_COMM_API_CALL_FREQUENCY_LIMIT       = 7008,    ///< API 调用超频
     ERR_SDK_INTERFACE_NOT_SUPPORT               = 7013,    ///< 套餐包不支持该接口的使用，请升级到旗舰版套餐
     ERR_SDK_INVALID_OPERATION                   = 7014,    ///< 非法请求
+    ERR_SDK_BLOCKED_BY_SENSITIVE_WORD           = 7015,    ///< SDK 本地内容审核，命中敏感词
     
-    // 帐号错误码
+    // 账号错误码
 
     ERR_SDK_NOT_LOGGED_IN                       = 6014,    ///< IM SDK 未登录，请先登录，成功回调之后重试，或者已被踢下线，可使用 TIMManager getLoginUser 检查当前是否在线。
     ERR_NO_PREVIOUS_LOGIN                       = 6026,    ///< 自动登录时，并没有登录过该用户，这时候请调用 login 接口重新登录。
     ERR_USER_SIG_EXPIRED                        = 6206,    ///< UserSig 过期，请重新获取有效的 UserSig 后再重新登录。
-    ERR_LOGIN_KICKED_OFF_BY_OTHER               = 6208,    ///< 其他终端登录同一个帐号，引起已登录的帐号被踢，需重新登录。
+    ERR_LOGIN_KICKED_OFF_BY_OTHER               = 6208,    ///< 其他终端登录同一个账号，引起已登录的账号被踢，需重新登录。
     ERR_SDK_ACCOUNT_LOGIN_IN_PROCESS            = 7501,    ///< 登录正在执行中，例如，第一次 login 或 autoLogin 操作在回调前，后续的 login 或 autoLogin 操作会返回该错误码。
     ERR_SDK_ACCOUNT_LOGOUT_IN_PROCESS           = 7502,    ///< 登出正在执行中，例如，第一次 logout 操作在回调前，后续的 logout 操作会返回该错误码。
     ERR_SDK_ACCOUNT_TLS_INIT_FAILED             = 7503,    ///< TLS SDK 初始化失败，内部错误，可 [提交工单](https://console.cloud.tencent.com/workorder/category?level1_id=29&level2_id=40&source=0&data_title=%E4%BA%91%E9%80%9A%E4%BF%A1%20%20IM&step=1) 提供使用接口、错误码、错误信息给客服解决。
@@ -61,10 +63,12 @@ enum ERROR_CODE {
     ERR_HTTP_REQ_FAILED                         = 6010,    ///< HTTP 请求失败，请检查 URL 地址是否合法，可在网页浏览器尝试访问该 URL 地址。
     ERR_INVALID_MSG_ELEM                        = 6016,    ///< IM SDK 无效消息 elem，具体可查看错误信息进一步定义哪个字段。
     ERR_INVALID_SDK_OBJECT                      = 6021,    ///< 无效的对象，例如用户自己生成 TIMImage 对象，或内部赋值错误导致对象无效。
-    ERR_SDK_MSG_BODY_SIZE_LIMIT                 = 8001,    ///< 消息长度超出限制，消息长度不要超过8k，消息长度是各个 elem 长度的总和，elem 长度是所有 elem 字段的长度总和。
+    ERR_INVALID_MSG_RECEIVER                    = 6032,    ///< 无效的消息接收方，请在 IM 控制台检查消息的接收方是否存在。
+    ERR_SDK_MSG_BODY_SIZE_LIMIT                 = 8001,    ///< 消息长度超出限制，消息长度不要超过12k，消息长度是各个 elem 长度的总和，elem 长度是所有 elem 字段的长度总和。
     ERR_SDK_MSG_KEY_REQ_DIFFER_RSP              = 8002,    ///< 消息 KEY 错误，内部错误，网络请求包的 KEY 和 回复包的不一致。
     ERR_SDK_IMAGE_CONVERT_ERROR                 = 8003,    ///< 万象优图 HTTP 请求失败。
     ERR_MERGER_MSG_LAYERS_OVER_LIMIT            = 8005,    ///< 合并消息嵌套层数超过上限（上限 100 层）。
+    ERR_SDK_MSG_MODIFY_CONFLICT                 = 8006,    ///< 消息修改冲突，您请求修改的消息已经被其他人修改。
     
     ERR_SDK_SIGNALING_INVALID_INVITE_ID         = 8010,    ///< 信令请求 ID 无效或已经被处理过。
     ERR_SDK_SIGNALING_NO_PERMISSION             = 8011,    ///< 信令请求无权限，比如取消非自己发起的邀请。
@@ -94,11 +98,11 @@ enum ERROR_CODE {
 
     // 网络错误码
 
-    ERR_SDK_NET_ENCODE_FAILED                   = 9501,    ///< SSO 加密失败，内部错误，可 [提交工单](https://console.cloud.tencent.com/workorder/category?level1_id=29&level2_id=40&source=0&data_title=%E4%BA%91%E9%80%9A%E4%BF%A1%20%20IM&step=1) 提供使用接口、错误码、错误信息给客服解决。
-    ERR_SDK_NET_DECODE_FAILED                   = 9502,    ///< SSO 解密失败，内部错误，可 [提交工单](https://console.cloud.tencent.com/workorder/category?level1_id=29&level2_id=40&source=0&data_title=%E4%BA%91%E9%80%9A%E4%BF%A1%20%20IM&step=1) 提供使用接口、错误码、错误信息给客服解决。
-    ERR_SDK_NET_AUTH_INVALID                    = 9503,    ///< SSO 未完成鉴权，可能登录未完成，请在登录完成后再操作。
-    ERR_SDK_NET_COMPRESS_FAILED                 = 9504,    ///< 数据包压缩失败，内部错误，可 [提交工单](https://console.cloud.tencent.com/workorder/category?level1_id=29&level2_id=40&source=0&data_title=%E4%BA%91%E9%80%9A%E4%BF%A1%20%20IM&step=1) 提供使用接口、错误码、错误信息给客服解决。
-    ERR_SDK_NET_UNCOMPRESS_FAILED               = 9505,    ///< 数据包解压失败，内部错误，可 [提交工单](https://console.cloud.tencent.com/workorder/category?level1_id=29&level2_id=40&source=0&data_title=%E4%BA%91%E9%80%9A%E4%BF%A1%20%20IM&step=1) 提供使用接口、错误码、错误信息给客服解决。
+    ERR_SDK_NET_ENCODE_FAILED                   = 9501,    ///< 网络加密失败，内部错误。
+    ERR_SDK_NET_DECODE_FAILED                   = 9502,    ///< 网络数据解密失败，内部错误。
+    ERR_SDK_NET_AUTH_INVALID                    = 9503,    ///< 未完成鉴权，可能登录未完成，请在登录完成后再操作。
+    ERR_SDK_NET_COMPRESS_FAILED                 = 9504,    ///< 数据包压缩失败，内部错误。
+    ERR_SDK_NET_UNCOMPRESS_FAILED               = 9505,    ///< 数据包解压失败，内部错误。
     ERR_SDK_NET_FREQ_LIMIT                      = 9506,    ///< 调用频率限制，最大每秒发起 5 次请求。
     ERR_SDK_NET_REQ_COUNT_LIMIT                 = 9507,    ///< 请求队列満，超过同时请求的数量限制，最大同时发起1000个请求。
     ERR_SDK_NET_DISCONNECT                      = 9508,    ///< 网络已断开，未建立连接，或者建立 socket 连接时，检测到无网络。
@@ -108,12 +112,12 @@ enum ERROR_CODE {
     ERR_SDK_NET_NET_UNREACH                     = 9512,    ///< 没有到达网络的可用路由，请等网络恢复后重试。
     ERR_SDK_NET_SOCKET_NO_BUFF                  = 9513,    ///< 系统中没有足够的缓冲区空间资源可用来完成调用，系统过于繁忙，内部错误。
     ERR_SDK_NET_RESET_BY_PEER                   = 9514,    ///< 对端重置了连接，可能服务端过载，SDK 内部会自动重连，请等网络连接成功 onConnSucc （ iOS ） 或 onConnected （ Android ） 回调后重试。
-    ERR_SDK_NET_SOCKET_INVALID                  = 9515,    ///< socket 套接字无效，内部错误，可 [提交工单](https://console.cloud.tencent.com/workorder/category?level1_id=29&level2_id=40&source=0&data_title=%E4%BA%91%E9%80%9A%E4%BF%A1%20%20IM&step=1) 提供使用接口、错误码、错误信息给客服解决。
+    ERR_SDK_NET_SOCKET_INVALID                  = 9515,    ///< socket 套接字无效，内部错误。
     ERR_SDK_NET_HOST_GETADDRINFO_FAILED         = 9516,    ///< IP 地址解析失败，内部错误，可能是本地 imsdk_config 配置文件被损坏，读取到到 IP 地址非法。
     ERR_SDK_NET_CONNECT_RESET                   = 9517,    ///< 网络连接到中间节点或服务端重置，引起连接失效，内部错误，SDK 内部会自动重连，请等网络连接成功 onConnSucc （ iOS ） 或 onConnected （ Android ） 回调后重试。
     ERR_SDK_NET_WAIT_INQUEUE_TIMEOUT            = 9518,    ///< 请求包等待进入待发送队列超时，发送时网络连接建立比较慢 或 频繁断网重连时，会出现该错误，请检查网络连接是否正常。
-    ERR_SDK_NET_WAIT_SEND_TIMEOUT               = 9519,    ///< 请求包已进入待发送队列，等待进入系统的网络 buffer 超时，数据包较多 或 发送线程处理不过来，在回调错误时检测有联网，内部错误。
-    ERR_SDK_NET_WAIT_ACK_TIMEOUT                = 9520,    ///< 请求包已进入系统的网络 buffer ，等待服务端回包超时，可能请求包没离开终端设备、中间路由丢弃、服务端意外丢包或回包被系统网络层丢弃，在回调错误时检测有联网，内部错误。
+    ERR_SDK_NET_WAIT_SEND_TIMEOUT               = 9519,    ///< 请求包已进入 IM SDK 待发送队列，等待进入操作系统的网络层时超时。一般可能原因是本地网络受限/不通或本地网络与 IM SDK 后台连接不通。建议用不同的网络环境分别运行 IM SDK 来确认是否因当前网络环境问题引起。
+    ERR_SDK_NET_WAIT_ACK_TIMEOUT                = 9520,    ///< 请求包已由 IM SDK 待发送队列进入操作系统网络层，等待服务端回包超时。一般可能原因是本地网络受限/不通或本地网络与 IM SDK 后台连接不通。建议用不同的网络环境分别运行 IM SDK 来确认是否因当前网络环境问题引起。
     ERR_SDK_NET_WAIT_SEND_REMAINING_TIMEOUT     = 9521,    ///< 请求包已进入待发送队列，部分数据已发送，等待发送剩余部分出现超时，可能上行带宽不足，请检查网络是否畅通，在回调错误时检测有联网，内部错误。
     ERR_SDK_NET_PKG_SIZE_LIMIT                  = 9522,    ///< 请求包长度大于限制，最大支持 1MB 。
     ERR_SDK_NET_WAIT_SEND_TIMEOUT_NO_NETWORK    = 9523,    ///< 请求包已进入待发送队列，等待进入系统的网络 buffer 超时，数据包较多 或 发送线程处理不过来，在回调错误码时检测到没有联网。
@@ -126,32 +130,33 @@ enum ERROR_CODE {
     //
     /////////////////////////////////////////////////////////////////////////////////
 
-    // SSO 接入层的错误码
+    // 网络接入层的错误码
 
-    ERR_SVR_SSO_CONNECT_LIMIT                   = -302  ,  ///< SSO 的连接数量超出限制，服务端拒绝服务。
-    ERR_SVR_SSO_VCODE                           = -10000,  ///< 下发验证码标志错误。
-    ERR_SVR_SSO_D2_EXPIRED                      = -10001,  ///< D2 过期。
-    ERR_SVR_SSO_A2_UP_INVALID                   = -10003,  ///< A2 校验失败等场景使用。
-    ERR_SVR_SSO_A2_DOWN_INVALID                 = -10004,  ///< 处理下行包时发现 A2 验证没通过或者被安全打击。
-    ERR_SVR_SSO_EMPTY_KEY                       = -10005,  ///< 不允许空 D2Key 加密。
-    ERR_SVR_SSO_UIN_INVALID                     = -10006,  ///< D2 中的 uin 和 SSO 包头的 uin 不匹配。
-    ERR_SVR_SSO_VCODE_TIMEOUT                   = -10007,  ///< 验证码下发超时。
-    ERR_SVR_SSO_NO_IMEI_AND_A2                  = -10008,  ///< 需要带上 IMEI 和 A2 。
-    ERR_SVR_SSO_COOKIE_INVALID                  = -10009,  ///< Cookie 非法。
-    ERR_SVR_SSO_DOWN_TIP                        = -10101,  ///< 下发提示语，D2 过期。
-    ERR_SVR_SSO_DISCONNECT                      = -10102,  ///< 断链锁屏。
-    ERR_SVR_SSO_IDENTIFIER_INVALID              = -10103,  ///< 失效身份。
-    ERR_SVR_SSO_CLIENT_CLOSE                    = -10104,  ///< 终端自动退出。
-    ERR_SVR_SSO_MSFSDK_QUIT                     = -10105,  ///< MSFSDK 自动退出。
-    ERR_SVR_SSO_D2KEY_WRONG                     = -10106,  ///< SSO D2key 解密失败次数太多，通知终端需要重置，重新刷新 D2 。
-    ERR_SVR_SSO_UNSURPPORT                      = -10107,  ///< 不支持聚合，给终端返回统一的错误码。终端在该 TCP 长连接上停止聚合。
-    ERR_SVR_SSO_PREPAID_ARREARS                 = -10108,  ///< 预付费欠费。
-    ERR_SVR_SSO_PACKET_WRONG                    = -10109,  ///< 请求包格式错误。
-    ERR_SVR_SSO_APPID_BLACK_LIST                = -10110,  ///< SDKAppID 黑名单。
-    ERR_SVR_SSO_CMD_BLACK_LIST                  = -10111,  ///< SDKAppID 设置 service cmd 黑名单。
-    ERR_SVR_SSO_APPID_WITHOUT_USING             = -10112,  ///< SDKAppID 停用。
-    ERR_SVR_SSO_FREQ_LIMIT                      = -10113,  ///< 频率限制(用户)，频率限制是设置针对某一个协议的每秒请求数的限制。
-    ERR_SVR_SSO_OVERLOAD                        = -10114,  ///< 过载丢包(系统)，连接的服务端处理过多请求，处理不过来，拒绝服务。
+    ERR_SVR_SSO_CONNECT_LIMIT                   = -302,    // Server 的连接数量超出限制，服务端拒绝服务。
+    ERR_SVR_SSO_VCODE                           = -10000,  // 下发验证码标志错误。
+    ERR_SVR_SSO_D2_EXPIRED                      = -10001,  // Key 过期。Key 是根据 UserSig 生成的内部票据，Key 的有效期小于或等于 UserSig 的有效期。请重新调用 V2TIMManager.getInstance().login 登录接口生成新的 Key。
+    ERR_SVR_SSO_A2_UP_INVALID                   = -10003,  // Ticket 过期。Ticket 是根据 UserSig 生成的内部票据，Ticket 的有效期小于或等于 UserSig 的有效期。请重新调用 V2TIMManager.getInstance().login 登录接口生成新的 Ticket。
+    ERR_SVR_SSO_A2_DOWN_INVALID                 = -10004,  // 票据验证没通过或者被安全打击。请重新调用 V2TIMManager.getInstance().login 登录接口生成新的票据。
+    ERR_SVR_SSO_EMPTY_KEY                       = -10005,  // 不允许空 Key。
+    ERR_SVR_SSO_UIN_INVALID                     = -10006,  // Key 中的账号和请求包头的账号不匹配。
+    ERR_SVR_SSO_VCODE_TIMEOUT                   = -10007,  // 验证码下发超时。
+    ERR_SVR_SSO_NO_IMEI_AND_A2                  = -10008,  // 需要带上 Key 和 Ticket。
+    ERR_SVR_SSO_COOKIE_INVALID                  = -10009,  // Cookie 检查不匹配。
+    ERR_SVR_SSO_DOWN_TIP                        = -10101,  // 下发提示语时 Key 过期。Key 是根据 UserSig 生成的内部票据，Key 的有效期小于或等于 UserSig 的有效期。请重新调用 V2TIMManager.getInstance().login 登录接口生成新的 Key。
+    ERR_SVR_SSO_DISCONNECT                      = -10102,  // 网络连接断开。
+    ERR_SVR_SSO_IDENTIFIER_INVALID              = -10103,  // 失效身份。
+    ERR_SVR_SSO_CLIENT_CLOSE                    = -10104,  // 终端自动退出。
+    ERR_SVR_SSO_MSFSDK_QUIT                     = -10105,  // MSFSDK 自动退出。
+    ERR_SVR_SSO_D2KEY_WRONG                     = -10106,  // 解密失败次数超过阈值，通知终端需要重置，请重新调用 TIMManager.getInstance().login 登录接口生成新的 Key。
+    ERR_SVR_SSO_UNSURPPORT                      = -10107,  // 不支持聚合，给终端返回统一的错误码。终端在该 TCP 长连接上停止聚合。
+    ERR_SVR_SSO_PREPAID_ARREARS                 = -10108,  // 预付费欠费。
+    ERR_SVR_SSO_PACKET_WRONG                    = -10109,  // 请求包格式错误。
+    ERR_SVR_SSO_APPID_BLACK_LIST                = -10110,  // SDKAppID 黑名单。
+    ERR_SVR_SSO_CMD_BLACK_LIST                  = -10111,  // SDKAppID 设置 service cmd 黑名单。
+    ERR_SVR_SSO_APPID_WITHOUT_USING             = -10112,  // SDKAppID 停用。
+    ERR_SVR_SSO_FREQ_LIMIT                      = -10113,  // 频率限制(用户)，频率限制是设置针对某一个协议的每秒请求数的限制。
+    ERR_SVR_SSO_OVERLOAD                        = -10114,  // 过载丢包(系统)，连接的服务端处理过多请求，处理不过来，拒绝服务。
+    ERR_SVR_SSO_FREQUENCY_LIMIT                 = -20009,  // 终端访问接口超频。
 
     // 资源文件错误码
 
@@ -175,11 +180,11 @@ enum ERROR_CODE {
     ERR_SVR_COMM_REST_FREQ_LIMIT                = 60007,  ///< REST 接口调用频率超过限制，请降低请求频率。
     ERR_SVR_COMM_REQUEST_TIMEOUT                = 60008,  ///< 服务请求超时或 HTTP 请求格式错误，请检查并重试。
     ERR_SVR_COMM_INVALID_RES                    = 60009,  ///< 请求资源错误，请检查请求 URL。
-    ERR_SVR_COMM_ID_NOT_ADMIN                   = 60010,  ///< REST API 请求的 Identifier 字段请填写 App 管理员帐号。
+    ERR_SVR_COMM_ID_NOT_ADMIN                   = 60010,  ///< REST API 请求的 Identifier 字段请填写 App 管理员账号。
     ERR_SVR_COMM_SDKAPPID_FREQ_LIMIT            = 60011,  ///< SDKAppID 请求频率超限，请降低请求频率。
     ERR_SVR_COMM_SDKAPPID_MISS                  = 60012,  ///< REST 接口需要带 SDKAppID，请检查请求 URL 中的 SDKAppID。
     ERR_SVR_COMM_RSP_JSON_PARSE_FAILED          = 60013,  ///< HTTP 响应包 JSON 解析错误。
-    ERR_SVR_COMM_EXCHANGE_ACCOUNT_TIMEUT        = 60014,  ///< 置换帐号超时。
+    ERR_SVR_COMM_EXCHANGE_ACCOUNT_TIMEUT        = 60014,  ///< 置换账号超时。
     ERR_SVR_COMM_INVALID_ID_FORMAT              = 60015,  ///< 请求包体 Identifier 类型错误，请确认 Identifier 为字符串格式。
     ERR_SVR_COMM_SDKAPPID_FORBIDDEN             = 60016,  ///< SDKAppID 被禁用，请 [提交工单](https://console.cloud.tencent.com/workorder/category?level1_id=29&level2_id=40&source=0&data_title=%E4%BA%91%E9%80%9A%E4%BF%A1%20%20IM&step=1) 联系客服确认。
     ERR_SVR_COMM_REQ_FORBIDDEN                  = 60017,  ///< 请求被禁用，请 [提交工单](https://console.cloud.tencent.com/workorder/category?level1_id=29&level2_id=40&source=0&data_title=%E4%BA%91%E9%80%9A%E4%BF%A1%20%20IM&step=1) 联系客服确认。
@@ -187,9 +192,10 @@ enum ERROR_CODE {
     ERR_SVR_COMM_REQ_FREQ_LIMIT_EX              = 60019,  ///< 请求过于频繁，请稍后重试。
     ERR_SVR_COMM_INVALID_SERVICE                = 60020,  ///< 未购买套餐包或购买的套餐包正在配置中暂未生效，请五分钟后再次尝试。
     ERR_SVR_COMM_SENSITIVE_TEXT                 = 80001,  ///< 文本安全打击，文本中可能包含敏感词汇。
-    ERR_SVR_COMM_BODY_SIZE_LIMIT                = 80002,  ///< 发消息包体过长，目前支持最大8k消息包体长度，请减少包体大小重试。
+    ERR_SVR_COMM_BODY_SIZE_LIMIT                = 80002,  ///< 发消息包体过长，目前支持最大12k消息包体长度，请减少包体大小重试。
+    ERR_SVR_COMM_SENSITIVE_IMAGE                = 80004,  ///< 图片安全打击，图片中可能包含敏感内容。
 
-    // 帐号错误码
+    // 账号错误码
 
     ERR_SVR_ACCOUNT_USERSIG_EXPIRED             = 70001,  ///< UserSig 已过期，请重新生成 UserSig，建议 UserSig 有效期不小于24小时。
     ERR_SVR_ACCOUNT_USERSIG_EMPTY               = 70002,  ///< UserSig 长度为0，请检查传入的 UserSig 是否正确。
@@ -201,22 +207,24 @@ enum ERROR_CODE {
     ERR_SVR_ACCOUNT_USERSIG_PUBLICKEY_NOT_FOUND = 70016,  ///< 验证 UserSig 时公钥不存在。请先登录控制台下载私钥，下载私钥的具体方法可参考 [下载签名用的私钥](https://cloud.tencent.com/document/product/269/32688#.E4.B8.8B.E8.BD.BD.E7.AD.BE.E5.90.8D.E7.94.A8.E7.9A.84.E7.A7.81.E9.92.A5) 。
     ERR_SVR_ACCOUNT_SDKAPPID_NOT_FOUND          = 70020,  ///< SDKAppID 未找到，请在云通信 IM 控制台确认应用信息。
     ERR_SVR_ACCOUNT_INVALID_USERSIG             = 70052,  ///< UserSig 已经失效，请重新生成，再次尝试。
-    ERR_SVR_ACCOUNT_NOT_FOUND                   = 70107,  ///< 请求的用户帐号不存在。
+    ERR_SVR_ACCOUNT_NOT_FOUND                   = 70107,  ///< 请求的用户账号不存在。
     ERR_SVR_ACCOUNT_SEC_RSTR                    = 70114,  ///< 安全原因被限制。
     ERR_SVR_ACCOUNT_INTERNAL_TIMEOUT            = 70169,  ///< 服务端内部超时，请重试。
     ERR_SVR_ACCOUNT_INVALID_COUNT               = 70206,  ///< 请求中批量数量不合法。
     ERR_SVR_ACCOUNT_INVALID_PARAMETERS          = 70402,  ///< 参数非法，请检查必填字段是否填充，或者字段的填充是否满足协议要求。
     ERR_SVR_ACCOUNT_ADMIN_REQUIRED              = 70403,  ///< 请求需要 App 管理员权限。
+    ERR_SVR_ACCOUNT_LOW_SDK_VERSION             = 70404,  ///< 您的SDK版本过低，请升级到最新版本.
     ERR_SVR_ACCOUNT_FREQ_LIMIT                  = 70050,  ///< 因失败且重试次数过多导致被限制，请检查 UserSig 是否正确，一分钟之后再试。
-    ERR_SVR_ACCOUNT_BLACKLIST                   = 70051,  ///< 帐号被拉入黑名单。
-    ERR_SVR_ACCOUNT_COUNT_LIMIT                 = 70398,  ///< 创建帐号数量超过免费体验版数量限制，请升级为专业版。
+    ERR_SVR_ACCOUNT_BLACKLIST                   = 70051,  ///< 账号被拉入黑名单。
+    ERR_SVR_ACCOUNT_COUNT_LIMIT                 = 70398,  ///< 创建账号数量超过免费体验版数量限制，请升级为专业版。
     ERR_SVR_ACCOUNT_INTERNAL_ERROR              = 70500,  ///< 服务端内部错误，请重试。
+    ERR_SVR_ACCOUNT_USER_STATUS_DISABLED        = 72001,  ///< 用户状态能力需要登录 IM 控制台开启
 
     // 资料错误码
 
     ERR_SVR_PROFILE_INVALID_PARAMETERS          = 40001,  ///< 请求参数错误，请根据错误描述检查请求是否正确。
-    ERR_SVR_PROFILE_ACCOUNT_MISS                = 40002,  ///< 请求参数错误，没有指定需要拉取资料的用户帐号。
-    ERR_SVR_PROFILE_ACCOUNT_NOT_FOUND           = 40003,  ///< 请求的用户帐号不存在。
+    ERR_SVR_PROFILE_ACCOUNT_MISS                = 40002,  ///< 请求参数错误，没有指定需要拉取资料的用户账号。
+    ERR_SVR_PROFILE_ACCOUNT_NOT_FOUND           = 40003,  ///< 请求的用户账号不存在。
     ERR_SVR_PROFILE_ADMIN_REQUIRED              = 40004,  ///< 请求需要 App 管理员权限。
     ERR_SVR_PROFILE_SENSITIVE_TEXT              = 40005,  ///< 资料字段中包含敏感词。
     ERR_SVR_PROFILE_INTERNAL_ERROR              = 40006,  ///< 服务端内部错误，请稍后重试。
@@ -226,12 +234,13 @@ enum ERROR_CODE {
     ERR_SVR_PROFILE_SIZE_LIMIT                  = 40601,  ///< 资料字段的 Value 长度超过500字节。
     ERR_SVR_PROFILE_VALUE_ERROR                 = 40605,  ///< 标配资料字段的 Value 错误，详情可参见 [标配资料字段](https://cloud.tencent.com/doc/product/269/1500#.E6.A0.87.E9.85.8D.E8.B5.84.E6.96.99.E5.AD.97.E6.AE.B5) 。
     ERR_SVR_PROFILE_INVALID_VALUE_FORMAT        = 40610,  ///< 资料字段的 Value 类型不匹配，详情可参见 [标配资料字段](https://cloud.tencent.com/doc/product/269/1500#.E6.A0.87.E9.85.8D.E8.B5.84.E6.96.99.E5.AD.97.E6.AE.B5) 。
+    ERR_SVR_PROFILE_SUBSCRIPTION_DISABLED       = 72012,  ///< 用户资料变更订阅能力未开启，请参见 [订阅非好友用户资料](https://cloud.tencent.com/document/product/269/75416#53edea52-35ef-4d82-aae9-941ba690f051)，登录 [IM 控制台](https://console.tencentcloud.com/im) 开启该功能。
 
     // 关系链错误码
 
     ERR_SVR_FRIENDSHIP_INVALID_PARAMETERS       = 30001,  ///< 请求参数错误，请根据错误描述检查请求是否正确。
     ERR_SVR_FRIENDSHIP_INVALID_SDKAPPID         = 30002,  ///< SDKAppID 不匹配。
-    ERR_SVR_FRIENDSHIP_ACCOUNT_NOT_FOUND        = 30003,  ///< 请求的用户帐号不存在。
+    ERR_SVR_FRIENDSHIP_ACCOUNT_NOT_FOUND        = 30003,  ///< 请求的用户账号不存在。
     ERR_SVR_FRIENDSHIP_ADMIN_REQUIRED           = 30004,  ///< 请求需要 App 管理员权限。
     ERR_SVR_FRIENDSHIP_SENSITIVE_TEXT           = 30005,  ///< 关系链字段中包含敏感词。
     ERR_SVR_FRIENDSHIP_INTERNAL_ERROR           = 30006,  ///< 服务端内部错误，请重试。
@@ -249,21 +258,32 @@ enum ERROR_CODE {
     ERR_SVR_FRIENDSHIP_ALLOW_TYPE_NEED_CONFIRM  = 30539,  ///< A 请求加 B 为好友，B 的加好友验证方式被设置为“AllowType_Type_NeedConfirm”，这时 A 与 B 之间只能形成未决关系，该返回码用于标识加未决成功，以便与加好友成功的返回码区分开，调用方可以捕捉该错误给用户一个合理的提示。
     ERR_SVR_FRIENDSHIP_ADD_FRIEND_SEC_RSTR      = 30540,  ///< 添加好友请求被安全策略打击，请勿频繁发起添加好友请求。
     ERR_SVR_FRIENDSHIP_PENDENCY_NOT_FOUND       = 30614,  ///< 请求的未决不存在。
-    ERR_SVR_FRIENDSHIP_DEL_NONFRIEND            = 31704,  ///< 与请求删除的帐号之间不存在好友关系。
+    ERR_SVR_FRIENDSHIP_DEL_NONFRIEND            = 31704,  ///< 与请求删除的账号之间不存在好友关系。
     ERR_SVR_FRIENDSHIP_DEL_FRIEND_SEC_RSTR      = 31707,  ///< 删除好友请求被安全策略打击，请勿频繁发起删除好友请求。
-    ERR_SVR_FRIENDSHIP_ACCOUNT_NOT_FOUND_EX     = 31804,  ///< 请求的用户帐号不存在。
+    ERR_SVR_FRIENDSHIP_ACCOUNT_NOT_FOUND_EX     = 31804,  ///< 请求的用户账号不存在。
+    ERR_SVR_FRIENDSHIP_SELF_FOLLOWING_COUNT_EXCEEDS_LIMIT = 32100,  ///< 自己的关注数量到达上限。
+    ERR_SVR_FRIENDSHIP_PEER_FOLLOWERS_COUNT_EXCEEDS_LIMIT = 32101,  ///< 对方的粉丝数量到达上限。
+    ERR_SVR_FRIENDSHIP_SELF_MUTUAL_FOLLOWERS_COUNT_EXCEEDS_LIMIT = 32102,  ///< 自己的互关数量到达上限。
+    ERR_SVR_FRIENDSHIP_PEER_MUTUAL_FOLLOWERS_COUNT_EXCEEDS_LIMIT = 32103,  ///< 对方的互关数量到达上限。
 
     // 最近联系人错误码
 
-    ERR_SVR_CONV_ACCOUNT_NOT_FOUND              = 50001,  ///< 请求的用户帐号不存在。
+    ERR_SVR_CONV_ACCOUNT_NOT_FOUND              = 50001,  ///< 请求的用户账号不存在。
     ERR_SVR_CONV_INVALID_PARAMETERS             = 50002,  ///< 请求参数错误，请根据错误描述检查请求是否正确。
     ERR_SVR_CONV_ADMIN_REQUIRED                 = 50003,  ///< 请求需要 App 管理员权限。
     ERR_SVR_CONV_INTERNAL_ERROR                 = 50004,  ///< 服务端内部错误，请重试。
     ERR_SVR_CONV_NET_TIMEOUT                    = 50005,  ///< 网络超时，请稍后重试。
+    
+    ERR_SVR_CONV_CONV_MARK_REQ_COUNT_EXCEED_LIMIT     = 51006,  ///< 一次标记、分组、设置自定义数据的会话数超过了上限（最大支持 100 个）
+    ERR_SVR_CONV_CONV_MARK_OPERATE_FAILED             = 51007,  ///< Group 会话操作异常，Server 内部错误或 Group 已经解散
+    ERR_SVR_CONV_CONV_MARK_TOTAL_COUNT_EXCEED_LIMIT   = 51008,  ///< 标记、分组、设置自定义数据的总会话数超过了上限（最大支持 1000 个）
+    ERR_SVR_CONV_CONV_GROUP_NOT_EXIST                 = 51009,  ///< 会话分组不存在
+    ERR_SVR_CONV_CONV_GROUP_TOTAL_COUNT_EXCEED_LIMIT  = 51010,  ///< 会话分组数超过了上限（最大支持 20 个）
+    ERR_SVR_CONV_CONV_GROUP_NAME_EXCEED_LENGTH        = 51011,  ///< 会话分组名字节数超过了上限（最大支持 32 字节）
 
     // 消息错误码
 
-    ERR_SVR_MSG_PKG_PARSE_FAILED                = 20001,  ///< 请求包非法，请检查发送方和接收方帐号是否存在。
+    ERR_SVR_MSG_PKG_PARSE_FAILED                = 20001,  ///< 请求包非法，请检查发送方和接收方账号是否存在。
     ERR_SVR_MSG_INTERNAL_AUTH_FAILED            = 20002,  ///< 内部鉴权失败。
     ERR_SVR_MSG_INVALID_ID                      = 20003,  ///< Identifier 无效或者 Identifier 未导入云通信 IM。
     ERR_SVR_MSG_NET_ERROR                       = 20004,  ///< 网络异常，请重试。
@@ -276,6 +296,13 @@ enum ERROR_CODE {
     ERR_SVR_MSG_SHUTUP_DENY                     = 20012,  ///< 因禁言，禁止发送消息。
     ERR_SVR_MSG_REVOKE_TIME_LIMIT               = 20016,  ///< 消息撤回超过了时间限制（默认2分钟）。
     ERR_SVR_MSG_DEL_RAMBLE_INTERNAL_ERROR       = 20018,  ///< 删除漫游内部错误。
+    ERR_SVR_MSG_EXTENSION_CONFLICT              = 23001,  ///< 消息扩展操作冲突。
+    ERR_SVR_MSG_EXTENSION_NOT_EXIST             = 23004,  ///< 删除的消息扩展不存在。
+    ERR_SVR_MSG_REACTION_COUNT_LIMIT            = 23005,  ///< 单条消息 Reaction 数量超过最大限制。
+    ERR_SVR_MSG_REACTION_USER_COUNT_LIMIT       = 23006,  ///< 单个 Reaction 用户数量超过最大限制。
+    ERR_SVR_MSG_REACTION_ALREADY_CONTAIN_USER   = 23007,  ///< Reaction 已经包含当前操作用户。
+    ERR_SVR_MSG_REACTION_NOT_EXISTS             = 23008,  ///< Reaction 不存在。
+    ERR_SVR_MSG_REACTION_NOT_CONTAIN_USER       = 23009,  ///< Reaction 不包含当前操作用户。
     ERR_SVR_MSG_JSON_PARSE_FAILED               = 90001,  ///< JSON 格式解析失败，请检查请求包是否符合 JSON 规范。
     ERR_SVR_MSG_INVALID_JSON_BODY_FORMAT        = 90002,  ///< JSON 格式请求包中 MsgBody 不符合消息格式描述，或者 MsgBody 不是 Array 类型，请参考 [TIMMsgElement 对象](https://cloud.tencent.com/document/product/269/2720#.E6.B6.88.E6.81.AF.E5.85.83.E7.B4.A0timmsgelement) 的定义。
     ERR_SVR_MSG_INVALID_TO_ACCOUNT              = 90003,  ///< JSON 格式请求包体中缺少 To_Account 字段或者 To_Account 字段不是 Integer 类型
@@ -284,17 +311,17 @@ enum ERROR_CODE {
     ERR_SVR_MSG_BODY_NOT_ARRAY                  = 90007,  ///< JSON 格式请求包体中 MsgBody 类型不是 Array 类型，请将其修改为 Array 类型
     ERR_SVR_MSG_ADMIN_REQUIRED                  = 90009,  ///< 请求需要 App 管理员权限。
     ERR_SVR_MSG_INVALID_JSON_FORMAT             = 90010,  ///< JSON 格式请求包不符合消息格式描述，请参考 [TIMMsgElement 对象](https://cloud.tencent.com/document/product/269/2720#.E6.B6.88.E6.81.AF.E5.85.83.E7.B4.A0timmsgelement) 的定义。
-    ERR_SVR_MSG_TO_ACCOUNT_COUNT_LIMIT          = 90011,  ///< 批量发消息目标帐号超过500，请减少 To_Account 中目标帐号数量。
+    ERR_SVR_MSG_TO_ACCOUNT_COUNT_LIMIT          = 90011,  ///< 批量发消息目标账号超过500，请减少 To_Account 中目标账号数量。
     ERR_SVR_MSG_TO_ACCOUNT_NOT_FOUND            = 90012,  ///< To_Account 没有注册或不存在，请确认 To_Account 是否导入云通信 IM 或者是否拼写错误。
     ERR_SVR_MSG_TIME_LIMIT                      = 90026,  ///< 消息离线存储时间错误（最多不能超过7天）。
     ERR_SVR_MSG_INVALID_SYNCOTHERMACHINE        = 90031,  ///< JSON 格式请求包体中 SyncOtherMachine 字段不是 Integer 类型
     ERR_SVR_MSG_INVALID_MSGLIFETIME             = 90044,  ///< JSON 格式请求包体中 MsgLifeTime 字段不是 Integer 类型
-    ERR_SVR_MSG_ACCOUNT_NOT_FOUND               = 90048,  ///< 请求的用户帐号不存在。
+    ERR_SVR_MSG_ACCOUNT_NOT_FOUND               = 90048,  ///< 请求的用户账号不存在。
     ERR_SVR_MSG_INTERNAL_ERROR2                 = 90994,  ///< 服务内部错误，请重试。
     ERR_SVR_MSG_INTERNAL_ERROR3                 = 90995,  ///< 服务内部错误，请重试。
     ERR_SVR_MSG_INTERNAL_ERROR4                 = 91000,  ///< 服务内部错误，请重试。
     ERR_SVR_MSG_INTERNAL_ERROR5                 = 90992,  ///< 服务内部错误，请重试；如果所有请求都返回该错误码，且 App 配置了第三方回调，请检查 App 服务端是否正常向云通信 IM 后台服务端返回回调结果。
-    ERR_SVR_MSG_BODY_SIZE_LIMIT                 = 93000,  ///< JSON 数据包超长，消息包体请不要超过8k。
+    ERR_SVR_MSG_BODY_SIZE_LIMIT                 = 93000,  ///< JSON 数据包超长，消息包体请不要超过12k。
     ERR_SVR_MSG_LONGPOLLING_COUNT_LIMIT         = 91101,  ///< Web 端长轮询被踢（Web 端同时在线实例个数超出限制）。
     // 120001 - 130000,  ///< 单聊第三方回调返回的自定义错误码。
 
@@ -303,7 +330,7 @@ enum ERROR_CODE {
     ERR_SVR_GROUP_INTERNAL_ERROR                = 10002,  ///< 服务端内部错误，请重试。
     ERR_SVR_GROUP_API_NAME_ERROR                = 10003,  ///< 请求中的接口名称错误，请核对接口名称并重试。
     ERR_SVR_GROUP_INVALID_PARAMETERS            = 10004,  ///< 参数非法，请根据错误描述检查请求是否正确。
-    ERR_SVR_GROUP_ACOUNT_COUNT_LIMIT            = 10005,  ///< 请求包体中携带的帐号数量过多。
+    ERR_SVR_GROUP_ACOUNT_COUNT_LIMIT            = 10005,  ///< 请求包体中携带的账号数量过多。
     ERR_SVR_GROUP_FREQ_LIMIT                    = 10006,  ///< 操作频率限制，请尝试降低调用的频率。
     ERR_SVR_GROUP_PERMISSION_DENY               = 10007,  ///< 操作权限不足，比如 Public 群组中普通成员尝试执行踢人操作，但只有 App 管理员才有权限。
     ERR_SVR_GROUP_INVALID_REQ                   = 10008,  ///< 请求非法，可能是请求中携带的签名信息验证不正确，请再次尝试或 [提交工单](https://console.cloud.tencent.com/workorder/category?level1_id=29&level2_id=40&source=0&data_title=%E4%BA%91%E9%80%9A%E4%BF%A1%20%20IM&step=1) 联系技术客服。
@@ -317,7 +344,7 @@ enum ERROR_CODE {
     ERR_SVR_GROUP_REJECT_FROM_THIRDPARTY        = 10016,  ///< App 后台通过第三方回调拒绝本次操作。
     ERR_SVR_GROUP_SHUTUP_DENY                   = 10017,  ///< 因被禁言而不能发送消息，请检查发送者是否被设置禁言。
     ERR_SVR_GROUP_RSP_SIZE_LIMIT                = 10018,  ///< 应答包长度超过最大包长（1MB），请求的内容过多，请尝试减少单次请求的数据量。
-    ERR_SVR_GROUP_ACCOUNT_NOT_FOUND             = 10019,  ///< 请求的用户帐号不存在。
+    ERR_SVR_GROUP_ACCOUNT_NOT_FOUND             = 10019,  ///< 请求的用户账号不存在。
     ERR_SVR_GROUP_GROUPID_IN_USED               = 10021,  ///< 群组 ID 已被使用，请选择其他的群组 ID。
     ERR_SVR_GROUP_SEND_MSG_FREQ_LIMIT           = 10023,  ///< 发消息的频率超限，请延长两次发消息时间的间隔。
     ERR_SVR_GROUP_REQ_ALLREADY_BEEN_PROCESSED   = 10024,  ///< 此邀请或者申请请求已经被处理。
@@ -333,6 +360,7 @@ enum ERROR_CODE {
     ERR_SVR_GROUP_COUNT_LIMIT                   = 10037,  ///< 单个用户可创建和加入的群组数量超过了限制，请参考 [价格说明](https://cloud.tencent.com/document/product/269/11673) 购买或升级预付费套餐“单人可创建与加入群组数”。
     ERR_SVR_GROUP_MEMBER_COUNT_LIMIT            = 10038,  ///< 群成员数量超过限制，请参考 [价格说明](https://cloud.tencent.com/document/product/269/11673) 购买或升级预付费套餐“扩展群人数上限”。
     ERR_SVR_GROUP_ATTRIBUTE_WRITE_CONFILCT      = 10056,  ///< 群属性写冲突，请先拉取最新的群属性后再尝试写操作，IMSDK  5.6 及其以上版本支持。
+    ERR_SVR_COMMUNITY_GROUP_NOT_OPEN            = 11000,  ///< 社群功能未开通。
     /////////////////////////////////////////////////////////////////////////////////
     //
     //                      （三）IM SDK V3 版本的错误码
@@ -341,7 +369,7 @@ enum ERROR_CODE {
 
     ERR_NO_SUCC_RESULT                          = 6003,   ///< 批量操作无成功结果。
     ERR_TO_USER_INVALID                         = 6011,   ///< 无效接收方。
-    ERR_REQUEST_TIMEOUT                         = 6012,   ///< 请求超时。
+    ERR_REQUEST_TIME_OUT                        = 6012,   ///< 请求超时。
     ERR_INIT_CORE_FAIL                          = 6018,   ///< INIT CORE 模块失败。
     ERR_EXPIRED_SESSION_NODE                    = 6020,   ///< SessionNode 为 null 。
     ERR_LOGGED_OUT_BEFORE_LOGIN_FINISHED        = 6023,   ///< 在登录完成前进行了登出（在登录时返回）。

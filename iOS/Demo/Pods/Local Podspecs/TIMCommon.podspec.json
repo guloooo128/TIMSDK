@@ -1,0 +1,38 @@
+{
+  "name": "TIMCommon",
+  "version": "7.9.5666",
+  "platforms": {
+    "ios": "9.0"
+  },
+  "license": {
+    "type": "Proprietary",
+    "text": "        copyright 2017 tencent Ltd. All rights reserved.\n"
+  },
+  "homepage": "https://cloud.tencent.com/document/product/269/3794",
+  "documentation_url": "https://cloud.tencent.com/document/product/269/9147",
+  "authors": "tencent video cloud",
+  "summary": "TIMCommon",
+  "dependencies": {
+    "TUICore": [
+
+    ],
+    "SDWebImage": [
+
+    ],
+    "ReactiveObjC": [
+
+    ],
+    "Masonry": [
+
+    ]
+  },
+  "requires_arc": true,
+  "source": {
+    "path": "./"
+  },
+  "source_files": "**/*.{h,m,mm,c}",
+  "resources": [
+    "Resources/*.bundle",
+    "Resources/PrivacyInfo.xcprivacy"
+  ]
+}

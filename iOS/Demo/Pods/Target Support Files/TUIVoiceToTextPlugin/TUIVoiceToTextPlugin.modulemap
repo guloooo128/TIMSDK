@@ -1,0 +1,6 @@
+framework module TUIVoiceToTextPlugin {
+  umbrella header "TUIVoiceToTextPlugin-umbrella.h"
+
+  export *
+  module * { export * }
+}

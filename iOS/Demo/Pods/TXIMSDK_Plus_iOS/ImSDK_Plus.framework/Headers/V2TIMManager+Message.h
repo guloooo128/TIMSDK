@@ -30,10 +30,14 @@
 @class V2TIMGroupMemberChangeInfo;
 @class V2TIMMessageSearchResult;
 @class V2TIMReceiveMessageOptInfo;
-@protocol V2TIMAdvancedMsgListener;
+@class V2TIMMessageExtension;
+@class V2TIMMessageExtensionResult;
+@class V2TIMMessageReaction;
+@class V2TIMMessageReactionResult;
+@class V2TIMMessageReactionChangeInfo;
+V2TIM_EXPORT @protocol V2TIMAdvancedMsgListener;
 
-
-@interface V2TIMManager (Message)
+V2TIM_EXPORT @interface V2TIMManager (Message)
 
 /////////////////////////////////////////////////////////////////////////////////
 //
@@ -51,9 +55,27 @@ typedef void (^V2TIMProgress)(uint32_t progress);
 typedef void (^V2TIMDownLoadProgress)(NSInteger curSize, NSInteger totalSize);
 /// 获取消息接收选项的结果回调
 typedef void (^V2TIMReceiveMessageOptListSucc)(NSArray<V2TIMReceiveMessageOptInfo *> *optList);
+/// 获取全局消息接收选项的结果回调
+typedef void (^V2TIMReceiveMessageOptSucc)(V2TIMReceiveMessageOptInfo *optInfo);
+/// 获取群消息已读回执的结果回调
+typedef void (^V2TIMMessageReadReceiptsSucc)(NSArray<V2TIMMessageReceipt*> *receiptList);
+/// 获取群消息已读或未读群成员列表
+typedef void (^V2TIMGroupMessageReadMemberListSucc)(NSMutableArray<V2TIMGroupMemberInfo*>* members, uint64_t nextSeq, BOOL isFinished);
+/// 消息修改完成回调
+typedef void (^V2TIMMessageModifyCompletion)(int code, NSString * desc, V2TIMMessage *msg);
+/// 设置消息扩展成功回调
+typedef void (^V2TIMMessageExtensionsSetSucc)(NSArray<V2TIMMessageExtensionResult*> *extensionResultList);
+/// 获取消息扩展成功回调
+typedef void (^V2TIMMessageExtensionsGetSucc)(NSArray<V2TIMMessageExtension*> *extensionList);
+/// 删除消息扩展成功回调
+typedef void (^V2TIMMessageExtensionsDeleteSucc)(NSArray<V2TIMMessageExtensionResult*> *extensionResultList);
+/// 批量拉取消息回应列表成功回调
+typedef void (^V2TIMGetMessageReactionsSucc)(NSArray<V2TIMMessageReactionResult *> *resultList);
+/// 分页拉取指定消息回应用户列表成功回调（userList：用户列表，只包含昵称、头像信息 nextSeq：下一次分页拉取的游标 isFinished：用户列表是否已经拉取完毕）
+typedef void (^V2TIMGetMessageReactionUserListSucc)(NSArray<V2TIMUserInfo *> *userList, uint32_t nextSeq, BOOL isFinished);
 
 /// 在接口 createTextAtMessage 中填入 kMesssageAtALL 表示当前消息需要 @ 群里所有人
-extern NSString * const kImSDK_MesssageAtALL;
+V2TIM_EXTERN NSString * const kImSDK_MesssageAtALL;
 
 /// 消息状态
 typedef NS_ENUM(NSInteger, V2TIMMessageStatus){
@@ -101,19 +123,26 @@ typedef NS_ENUM(NSInteger, V2TIMGroupTipsType){
     V2TIM_GROUP_TIPS_TYPE_KICKED              = 0x04,  ///< 踢出群 (opMember 把 memberList 踢出群组)
     V2TIM_GROUP_TIPS_TYPE_SET_ADMIN           = 0x05,  ///< 设置管理员 (opMember 把 memberList 设置为管理员)
     V2TIM_GROUP_TIPS_TYPE_CANCEL_ADMIN        = 0x06,  ///< 取消管理员 (opMember 取消 memberList 管理员身份)
-    V2TIM_GROUP_TIPS_TYPE_GROUP_INFO_CHANGE   = 0x07,  ///< 群资料变更 (opMember 修改群资料： groupName & introduction & notification & faceUrl & owner & custom)
+    V2TIM_GROUP_TIPS_TYPE_GROUP_INFO_CHANGE   = 0x07,  ///< 群资料变更 (opMember 修改群资料： groupName & introduction & notification & faceUrl & owner & allMute & custom)
     V2TIM_GROUP_TIPS_TYPE_MEMBER_INFO_CHANGE  = 0x08,  ///< 群成员资料变更 (opMember 修改群成员资料：muteTime)
+    V2TIM_GROUP_TIPS_TYPE_TOPIC_INFO_CHANGE   = 0x09,  ///< 话题资料变更 (opMember 修改话题资料：topicName & introduction & notification & faceUrl & allMute & topicCustomData)
 };
 
 /// 群变更信息 Tips 类型
 typedef NS_ENUM(NSInteger, V2TIMGroupInfoChangeType){
-    V2TIM_GROUP_INFO_CHANGE_TYPE_NAME         = 0x01,  ///< 群名修改
-    V2TIM_GROUP_INFO_CHANGE_TYPE_INTRODUCTION = 0x02,  ///< 群简介修改
-    V2TIM_GROUP_INFO_CHANGE_TYPE_NOTIFICATION = 0x03,  ///< 群公告修改
-    V2TIM_GROUP_INFO_CHANGE_TYPE_FACE         = 0x04,  ///< 群头像修改
-    V2TIM_GROUP_INFO_CHANGE_TYPE_OWNER        = 0x05,  ///< 群主变更
-    V2TIM_GROUP_INFO_CHANGE_TYPE_CUSTOM       = 0x06,  ///< 群自定义字段变更
-    V2TIM_GROUP_INFO_CHANGE_TYPE_SHUT_UP_ALL  = 0x08,  ///< 全员禁言字段变更
+    V2TIM_GROUP_INFO_CHANGE_TYPE_NAME                       = 0x01,  ///< 群名修改
+    V2TIM_GROUP_INFO_CHANGE_TYPE_INTRODUCTION               = 0x02,  ///< 群简介修改
+    V2TIM_GROUP_INFO_CHANGE_TYPE_NOTIFICATION               = 0x03,  ///< 群公告修改
+    V2TIM_GROUP_INFO_CHANGE_TYPE_FACE                       = 0x04,  ///< 群头像修改
+    V2TIM_GROUP_INFO_CHANGE_TYPE_OWNER                      = 0x05,  ///< 群主变更
+    V2TIM_GROUP_INFO_CHANGE_TYPE_CUSTOM                     = 0x06,  ///< 群自定义字段变更
+    V2TIM_GROUP_INFO_CHANGE_TYPE_SHUT_UP_ALL                = 0x08,  ///< 全员禁言字段变更
+    V2TIM_GROUP_INFO_CHANGE_TYPE_TOPIC_CUSTOM_DATA          = 0x09,  ///< 话题自定义字段变更
+    V2TIM_GROUP_INFO_CHANGE_TYPE_RECEIVE_MESSAGE_OPT        = 0x0A,  ///< 消息接收选项变更
+    V2TIM_GROUP_INFO_CHANGE_TYPE_GROUP_ADD_OPT              = 0x0B,  ///< 申请加群方式下管理员审批选项变更
+    V2TIM_GROUP_INFO_CHANGE_TYPE_GROUP_APPROVE_OPT          = 0x0C,  ///< 邀请进群方式下管理员审批选项变更
+    V2TIM_GROUP_INFO_CHANGE_TYPE_ENABLE_PERMISSION_GROUP    = 0x0D,  ///< 是否开启权限组功能变更
+    V2TIM_GROUP_INFO_CHANGE_TYPE_DEFAULT_PERMISSIONS        = 0x0E,  ///< 群默认权限变更
 };
 
 /// 消息拉取方式
@@ -135,6 +164,18 @@ typedef NS_ENUM(NSInteger, V2TIMReceiveMessageOpt) {
 typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
     V2TIM_KEYWORD_LIST_MATCH_TYPE_OR          = 0,
     V2TIM_KEYWORD_LIST_MATCH_TYPE_AND         = 1
+};
+
+/// 群消息已读成员列表过滤类型
+typedef NS_ENUM(NSInteger, V2TIMGroupMessageReadMembersFilter) {
+    V2TIM_GROUP_MESSAGE_READ_MEMBERS_FILTER_READ   = 0,  ///< 群消息已读成员列表
+    V2TIM_GROUP_MESSAGE_READ_MEMBERS_FILTER_UNREAD = 1,  ///< 群消息未读成员列表
+};
+
+/// iOS 离线推送的类型
+typedef NS_ENUM(NSInteger, V2TIMIOSOfflinePushType) {
+    V2TIM_IOS_OFFLINE_PUSH_TYPE_APNS               = 0,  ///< 普通的 APNs 推送
+    V2TIM_IOS_OFFLINE_PUSH_TYPE_VOIP               = 1,  ///< VoIP 推送
 };
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -160,12 +201,12 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 //
 /////////////////////////////////////////////////////////////////////////////////
 /**
- *  2.1 创建文本消息（最大支持 8KB）
+ *  2.1 创建文本消息（最大支持 12KB）
  */
 - (V2TIMMessage *)createTextMessage:(NSString *)text;
 
 /**
- *  2.2 创建文本消息，并且可以附带 @ 提醒功能（最大支持 8KB）
+ *  2.2 创建文本消息，并且可以附带 @ 提醒功能（最大支持 12KB）
  *
  *  提醒消息仅适用于在群组中发送的消息
  *
@@ -175,21 +216,22 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
  *  @note atUserList 使用注意事项
  *  - 默认情况下，最多支持 @ 30个用户，超过限制后，消息会发送失败。
  *  - atUserList 的总数不能超过默认最大数，包括 @ALL。
+ *  - 直播群（AVChatRoom）不支持发送 @ 消息。
  */
-- (V2TIMMessage *)createTextAtMessage:(NSString *)text atUserList:(NSMutableArray<NSString *> *)atUserList;
+- (V2TIMMessage *)createTextAtMessage:(NSString *)text atUserList:(NSMutableArray<NSString *> *)atUserList __attribute__((deprecated("use createAtSignedGroupMessage:atUserList: instead")));
 
 /**
- *  2.3 创建自定义消息（最大支持 8KB）
+ *  2.3 创建自定义消息（最大支持 12KB）
  */
 - (V2TIMMessage *)createCustomMessage:(NSData *)data;
 
 /**
- *  2.4 创建自定义消息（最大支持 8KB）
+ *  2.4 创建自定义消息（最大支持 12KB）
  *
  *  @param desc 自定义消息描述信息，做离线Push时文本展示。
  *  @param extension 离线Push时扩展字段信息。
  */
-- (V2TIMMessage *)createCustomMessage:(NSData *)data desc:(NSString *)desc extension:(NSString *)extension;
+- (V2TIMMessage *)createCustomMessage:(NSData *)data desc:(NSString *)desc extension:(NSString *)extension NS_SWIFT_NAME(createCustomMessage(data:desc:ext:));
 
 /**
  *  2.5 创建图片消息（图片文件最大支持 28 MB）
@@ -281,6 +323,41 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
  */
 - (V2TIMMessage *)createForwardMessage:(V2TIMMessage *)message;
 
+
+/**
+ *  2.13 创建定向群消息（6.0 及以上版本支持）
+ *
+ *  如果您需要在群内给指定群成员列表发消息，可以创建一条定向群消息，定向群消息只有指定群成员才能收到。
+ *
+ *  @param message 原始消息对象
+ *  @param receiverList 消息接收者列表
+ *  @return 定向群消息对象
+ *
+ * @note 请注意：
+ * - 原始消息对象不支持群 @ 消息。
+ * - 消息接收者列表最大支持 50 个。
+ * - 社群（Community）和直播群（AVChatRoom）不支持发送定向群消息。
+ * - 定向群消息默认不计入群会话的未读计数。
+ */
+- (V2TIMMessage *)createTargetedGroupMessage:(V2TIMMessage *)message receiverList:(NSMutableArray<NSString *> *)receiverList;
+
+/**
+ *  2.14 创建带 @ 标记的群消息（7.0 及以上版本支持）
+ *
+ *  如果您需要发送的群消息附带 @ 提醒功能，可以创建一条带 @ 标记的群消息。
+ *
+ *  @param message 原始消息对象
+ *  @param atUserList 需要 @ 的用户列表，如果需要 @ALL，请传入 kImSDK_MesssageAtALL 常量字符串。
+ *  举个例子，假设该条消息希望@提醒 denny 和 lucy 两个用户，同时又希望@所有人，atUserList 传 @[@"denny",@"lucy",kImSDK_MesssageAtALL]
+ *  @return 群 @ 消息对象
+ *
+ *  @note atUserList 使用注意事项
+ *  - 默认情况下，最多支持 @ 30个用户，超过限制后，消息会发送失败。
+ *  - atUserList 的总数不能超过默认最大数，包括 @ALL。
+ *  - 直播群（AVChatRoom）不支持发送 @ 消息。
+ */
+- (V2TIMMessage *)createAtSignedGroupMessage:(V2TIMMessage *)message atUserList:(NSMutableArray<NSString *> *)atUserList;
+
 /////////////////////////////////////////////////////////////////////////////////
 //
 //                         发送 - 高级（图片、语音、视频等）消息
@@ -300,6 +377,7 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
  *  @return msgID 消息唯一标识
  *
  *  @note
+ *  - 6.0 及以上版本支持定向群消息，如果 groupID 和 receiver 同时设置，表示给 receiver 发送定向群消息，如果要给多个 receiver 发送定向群消息，需要先调用 createTargetedGroupMessage 接口创建定向群消息后再发送。
  *  - 如果需要消息离线推送，请先在 V2TIMManager+APNS.h 开启推送，推送开启后，除了自定义消息，其他消息默认都会推送。
  *  - 如果自定义消息也需要推送，请设置 offlinePushInfo 的 desc 字段，设置成功后，推送的时候会默认展示 desc 信息。
  *  - AVChatRoom 群聊不支持 onlineUserOnly 字段，如果是 AVChatRoom 请将该字段设置为 NO。
@@ -348,6 +426,51 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
                               opt:(V2TIMReceiveMessageOpt)opt
                              succ:(V2TIMSucc)succ
                              fail:(V2TIMFail)fail;
+                            
+/**
+ * 4.4 设置全局消息接收选项，从 7.4 版本开始支持。
+ *
+ * @param opt 全局消息接收选项，支持两种取值：
+ *              V2TIMReceiveMessageOpt.V2TIM_RECEIVE_MESSAGE：在线正常接收消息，离线时会有厂商的离线推送通知，默认为该选项
+ *              V2TIMReceiveMessageOpt.V2TIM_RECEIVE_NOT_NOTIFY_MESSAGE：在线正常接收消息，离线不会有推送通知，可用于实现消息免打扰功能
+ * @param startHour   免打扰开始时间：小时，取值范围[0 - 23]
+ * @param startMinute 免打扰开始时间：分钟，取值范围[0 - 59]
+ * @param startSecond 免打扰开始时间：秒，取值范围[0 - 59]
+ * @param duration    免打扰持续时长：单位：秒，取值范围 [0 - 24*60*60].
+ *
+ * @note 请注意
+ *  - 当 duration 的取值小于 24*60*60 时，可用于实现重复免打扰，即消息免打扰从每天的 startHour:startMinute:startSecond 表示的时间点开始，持续时长为 druation 秒
+ *  - 当 duration 取值不小于 24*60*60 时，可用于实现永久免打扰，即从调用该 API 当天 startHour:startMinute:startSecond 表示的时间点开始永久消息免打扰
+ */
+ - (void)setAllReceiveMessageOpt:(V2TIMReceiveMessageOpt) opt
+                       startHour:(int32_t)startHour
+                     startMinute:(int32_t) startMinute
+                     startSecond:(int32_t) startSecond
+                        duration:(uint32_t) duration
+                            succ:(V2TIMSucc)succ
+                            fail:(V2TIMFail)fail;
+
+/**
+ * 4.5 设置全局消息接收选项，从 7.4 版本开始支持。
+ *
+ * @param opt 全局消息接收选项，支持两种取值：
+ *              V2TIMReceiveMessageOpt.V2TIM_RECEIVE_MESSAGE：在线正常接收消息，离线时会有厂商的离线推送通知，默认为该选项
+ *              V2TIMReceiveMessageOpt.V2TIM_RECEIVE_NOT_NOTIFY_MESSAGE：在线正常接收消息，离线不会有推送通知，可用于实现消息免打扰功能
+ * @param startTimeStamp 免打扰开始时间，UTC 时间戳，单位：秒
+ * @param duration       免打扰持续时长，单位：秒
+ *
+ */
+- (void)setAllReceiveMessageOpt:(V2TIMReceiveMessageOpt) opt
+                 startTimeStamp:(uint32_t) startTimeStamp
+                       duration:(uint32_t) duration
+                           succ:(V2TIMSucc)succ
+                           fail:(V2TIMFail)fail;
+
+/**
+ *  4.6 获取登录用户全局消息接收选项，从 7.3 版本开始支持
+ *
+ */
+- (void)getAllReceiveMessageOpt:(V2TIMReceiveMessageOptSucc)succ fail:(V2TIMFail)fail;
 
 /////////////////////////////////////////////////////////////////////////////////
 //
@@ -361,9 +484,13 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
  *  @param count 拉取消息的个数，不宜太多，会影响消息拉取的速度，这里建议一次拉取 20 个
  *  @param lastMsg 获取消息的起始消息，如果传 nil，起始消息为会话的最新消息
  *
- *  @note 如果 SDK 检测到没有网络，默认会直接返回本地数据
+ *  @note 
+ *  - 如果没有触发登录，调用该接口不会返回历史消息
+ *  - 如果登录失败，调用该接口会返回本地历史消息
+ *  - 如果 SDK 检测到没有网络，调用该接口会返回本地历史消息
+ *  - 如果登录成功且网络正常，调用该接口会先请求云端历史消息，然后再和本地历史消息合并后返回
  */
-- (void)getC2CHistoryMessageList:(NSString *)userID count:(int)count lastMsg:(V2TIMMessage*)lastMsg succ:(V2TIMMessageListSucc)succ fail:(V2TIMFail)fail;
+- (void)getC2CHistoryMessageList:(NSString *)userID count:(int)count lastMsg:(V2TIMMessage *)lastMsg succ:(V2TIMMessageListSucc)succ fail:(V2TIMFail)fail;
 
 /**
  *  5.2 获取群组历史消息
@@ -372,11 +499,13 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
  *  @param lastMsg 获取消息的起始消息，如果传 nil，起始消息为会话的最新消息
  *
  *  @note 请注意：
- *  - 如果 SDK 检测到没有网络，默认会直接返回本地数据
+ *  - 如果没有触发登录，调用该接口不会返回历史消息
+ *  - 如果登录失败，调用该接口会返回本地历史消息
+ *  - 如果 SDK 检测到没有网络，调用该接口会返回本地历史消息
+ *  - 如果登录成功且网络正常，调用该接口会先请求云端历史消息，然后再和本地历史消息合并后返回
  *  - 只有会议群（Meeting）才能拉取到进群前的历史消息，直播群（AVChatRoom）消息不存漫游和本地数据库，调用这个接口无效
- *
  */
-- (void)getGroupHistoryMessageList:(NSString *)groupID count:(int)count lastMsg:(V2TIMMessage*)lastMsg succ:(V2TIMMessageListSucc)succ fail:(V2TIMFail)fail;
+- (void)getGroupHistoryMessageList:(NSString *)groupID count:(int)count lastMsg:(V2TIMMessage *)lastMsg succ:(V2TIMMessageListSucc)succ fail:(V2TIMFail)fail;
 
 /**
  *  5.3 获取历史消息高级接口
@@ -384,9 +513,11 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
  *  @param option 拉取消息选项设置，可以设置从云端、本地拉取更老或更新的消息
  *
  *  @note 请注意：
- *  - 如果设置为拉取云端消息，当 SDK 检测到没有网络，默认会直接返回本地数据
+ *  - 如果没有触发登录，调用该接口不会返回历史消息
+ *  - 如果登录失败，调用该接口会返回本地历史消息
+ *  - 如果 SDK 检测到没有网络，调用该接口会返回本地历史消息
+ *  - 如果登录成功且网络正常，当 option 设置为拉取云端历史消息，调用该接口会先请求云端历史消息，然后再和本地历史消息合并后返回
  *  - 只有会议群（Meeting）才能拉取到进群前的历史消息，直播群（AVChatRoom）消息不存漫游和本地数据库，调用这个接口无效
- *
  */
 - (void)getHistoryMessageList:(V2TIMMessageListGetOption *)option succ:(V2TIMMessageListSucc)succ
                          fail:(V2TIMFail)fail;
@@ -396,42 +527,35 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
  *
  *  @note 请注意：
     - 撤回消息的时间限制默认 2 minutes，超过 2 minutes 的消息不能撤回，您也可以在 [控制台](https://console.cloud.tencent.com/im)（功能配置 -> 登录与消息 -> 消息撤回设置）自定义撤回时间限制。
- *  - 仅支持单聊和群组中发送的普通消息，无法撤销 onlineUserOnly 为 true 即仅在线用户才能收到的消息，也无法撤销直播群（AVChatRoom）中的消息。
+ *  - 仅支持单聊和群组中发送的普通消息，无法撤销 onlineUserOnly 为 true 即仅在线用户才能收到的消息。
  *  - 如果发送方撤回消息，已经收到消息的一方会收到 V2TIMAdvancedMsgListener -> onRecvMessageRevoked 回调。
+ *  - 从 IMSDK 7.4 版本开始，支持撤回包括直播群（AVChatRoom）、社群在内的所有群类型的消息。
+ *  - 在单聊场景中，仅能撤回自己的消息；在群聊场景中，除了可以撤回自己的消息外，管理员或者群主也可以撤回其他群成员的消息。
  */
 - (void)revokeMessage:(V2TIMMessage *)msg succ:(V2TIMSucc)succ fail:(V2TIMFail)fail;
 
 /**
- *  5.5 设置单聊消息已读
+ *  5.5 消息变更
  *
- *  @note 从 5.8 版本开始，当 userID 为 nil 时，标记所有单聊消息为已读状态
+ *  @note 请注意：
+ *  - 如果消息修改成功，自己和对端用户（C2C）或群组成员（Group）都会收到 onRecvMessageModified 回调。
+ *  - 如果在修改消息过程中，消息已经被其他人修改，completion 会返回 ERR_SDK_MSG_MODIFY_CONFLICT 错误。
+ *  - 消息无论修改成功或则失败，completion 都会返回最新的消息对象。
  */
-- (void)markC2CMessageAsRead:(NSString *)userID succ:(V2TIMSucc)succ fail:(V2TIMFail)fail;
+- (void)modifyMessage:(V2TIMMessage *)msg completion:(V2TIMMessageModifyCompletion)completion;
 
 /**
- *  5.6 设置群组消息已读
- *
- *  @note 从 5.8 版本开始，当 groupID 为 nil 时，标记所有群组消息为已读状态
- */
-- (void)markGroupMessageAsRead:(NSString *)groupID succ:(V2TIMSucc)succ fail:(V2TIMFail)fail;
-
-/**
- *  5.7 标记所有消息为已读 （5.8 及其以上版本支持）
- */
-- (void)markAllMessageAsRead:(V2TIMSucc)succ fail:(V2TIMFail)fail;
-
-/**
- *  5.8 删除本地消息
+ *  5.6 删除本地消息
  *
  *  @note 该接口只能删除本地历史，消息删除后，SDK 会在本地把这条消息标记为已删除状态，getHistoryMessage 不能再拉取到，如果程序卸载重装，本地会失去对这条消息的删除标记，getHistoryMessage 还能再拉取到该条消息。
  */
 - (void)deleteMessageFromLocalStorage:(V2TIMMessage *)msg succ:(V2TIMSucc)succ fail:(V2TIMFail)fail;
 
 /**
- *  5.9 删除本地及云端的消息
+ *  5.7 删除本地及云端的消息
  *
  *  @note 该接口会在 deleteMessageFromLocalStorage 的基础上，同步删除云端存储的消息，且无法恢复。需要注意的是：
- *  - 一次最多只能删除 30 条消息
+ *  - 一次最多只能删除 50 条消息
  *  - 要删除的消息必须属于同一会话
  *  - 一秒钟最多只能调用一次该接口
  *  - 如果该账号在其他设备上拉取过这些消息，那么调用该接口删除后，这些消息仍然会保存在那些设备上，即删除消息不支持多端同步。
@@ -439,7 +563,7 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 - (void)deleteMessages:(NSArray<V2TIMMessage *>*)msgList succ:(V2TIMSucc)succ fail:(V2TIMFail)fail;
 
 /**
- *  5.10 清空单聊本地及云端的消息（不删除会话）
+ *  5.8 清空单聊本地及云端的消息（不删除会话）
  * <p>5.4.666 及以上版本支持
  *
  * @note 请注意：
@@ -448,7 +572,7 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 - (void)clearC2CHistoryMessage:(NSString *)userID succ:(V2TIMSucc)succ fail:(V2TIMFail)fail;
 
 /**
- *  5.11 清空群聊本地及云端的消息（不删除会话）
+ *  5.9 清空群聊本地及云端的消息（不删除会话）
  * <p>5.4.666 及以上版本支持
  *
  * @note 请注意：
@@ -457,7 +581,7 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 - (void)clearGroupHistoryMessage:(NSString *)groupID succ:(V2TIMSucc)succ fail:(V2TIMFail)fail;
 
 /**
- *  5.12 向群组消息列表中添加一条消息
+ *  5.10 向群组消息列表中添加一条消息
  *
  *  该接口主要用于满足向群组聊天会话中插入一些提示性消息的需求，比如“您已经退出该群”，这类消息有展示
  *  在聊天消息区的需求，但并没有发送给其他人的必要。
@@ -469,7 +593,7 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 - (NSString *)insertGroupMessageToLocalStorage:(V2TIMMessage *)msg to:(NSString *)groupID sender:(NSString *)sender succ:(V2TIMSucc)succ fail:(V2TIMFail)fail;
 
 /**
- *  5.13 向C2C消息列表中添加一条消息
+ *  5.11 向C2C消息列表中添加一条消息
  *
  *  该接口主要用于满足向C2C聊天会话中插入一些提示性消息的需求，比如“您已成功发送消息”，这类消息有展示
  *  在聊天消息区的需求，但并没有发送给对方的必要。
@@ -481,18 +605,199 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 - (NSString *)insertC2CMessageToLocalStorage:(V2TIMMessage *)msg to:(NSString *)userID sender:(NSString *)sender succ:(V2TIMSucc)succ fail:(V2TIMFail)fail;
 
 /**
- *  5.14 根据 messageID 查询指定会话中的本地消息
+ *  5.12 根据 messageID 查询指定会话中的本地消息
  *  @param messageIDList 消息 ID 列表
  */
 - (void)findMessages:(NSArray<NSString *>*)messageIDList succ:(V2TIMMessageListSucc)succ fail:(V2TIMFail)fail;
 
 /**
- * 5.15 搜索本地消息（5.4.666 及以上版本支持，需要您购买旗舰版套餐）
+ * 5.13 搜索本地消息（5.4.666 及以上版本支持，需要您购买旗舰版套餐）
  * @param param 消息搜索参数，详见 V2TIMMessageSearchParam 的定义
+ * @note 该功能为 IM 旗舰版功能，[购买旗舰版套餐包](https://buy.cloud.tencent.com/avc?from=17474)后可使用，详见[价格说明](https://cloud.tencent.com/document/product/269/11673?from=17176#.E5.9F.BA.E7.A1.80.E6.9C.8D.E5.8A.A1.E8.AF.A6.E6.83.85)
 */
  - (void)searchLocalMessages:(V2TIMMessageSearchParam *)param succ:(V2TIMSearchMessageListSucc)succ fail:(V2TIMFail)fail;
-@end
 
+/**
+ * 5.14 搜索云端消息（7.3 及以上版本支持）
+ * @param param 消息搜索参数，详见 V2TIMMessageSearchParam 的定义
+ * @note
+ * - 该功能为 IM 增值功能，详见[价格说明](https://cloud.tencent.com/document/product/269/11673?from=17176#.E5.9F.BA.E7.A1.80.E6.9C.8D.E5.8A.A1.E8.AF.A6.E6.83.85)
+ * - 如果您没有开通该服务，调用接口会返回 60020 错误码
+*/
+ - (void)searchCloudMessages:(V2TIMMessageSearchParam *)param succ:(V2TIMSearchMessageListSucc)succ fail:(V2TIMFail)fail;
+
+/**
+ * 5.15 发送消息已读回执 （6.1 及其以上版本支持）
+ *
+ * @note 请注意：
+ * - 该功能为旗舰版功能，[购买旗舰版套餐包](https://buy.cloud.tencent.com/avc?from=17485)后可使用，详见[价格说明](https://cloud.tencent.com/document/product/269/11673?from=17221#.E5.9F.BA.E7.A1.80.E6.9C.8D.E5.8A.A1.E8.AF.A6.E6.83.85)。
+ * - 向群消息发送已读回执，需要您先到控制台打开对应的开关，详情参考文档 [群消息已读回执](https://cloud.tencent.com/document/product/269/75343#.E8.AE.BE.E7.BD.AE.E6.94.AF.E6.8C.81.E5.B7.B2.E8.AF.BB.E5.9B.9E.E6.89.A7.E7.9A.84.E7.BE.A4.E7.B1.BB.E5.9E.8B) 。
+ * - messageList 里的消息必须在同一个会话中。
+ * - 该接口调用成功后，会话未读数不会变化，消息发送者会收到 onRecvMessageReadReceipts 回调，回调里面会携带消息的最新已读信息。
+ */
+- (void)sendMessageReadReceipts:(NSArray<V2TIMMessage *>*)messageList succ:(V2TIMSucc)succ fail:(V2TIMFail)fail;
+
+/**
+ * 5.16 获取消息已读回执（6.1 及其以上版本支持）
+ * @param messageList 消息列表
+ *
+ * @note 请注意：
+ * - 该功能为旗舰版功能，[购买旗舰版套餐包](https://buy.cloud.tencent.com/avc?from=17485)后可使用，详见[价格说明](https://cloud.tencent.com/document/product/269/11673?from=17221#.E5.9F.BA.E7.A1.80.E6.9C.8D.E5.8A.A1.E8.AF.A6.E6.83.85)。
+ * - 获取群消息已读回执，需要您先到控制台打开对应的开关，详情参考文档 [群消息已读回执](https://cloud.tencent.com/document/product/269/75343#.E8.AE.BE.E7.BD.AE.E6.94.AF.E6.8C.81.E5.B7.B2.E8.AF.BB.E5.9B.9E.E6.89.A7.E7.9A.84.E7.BE.A4.E7.B1.BB.E5.9E.8B) 。
+ * - messageList 里的消息必须在同一个会话中。
+ */
+- (void)getMessageReadReceipts:(NSArray<V2TIMMessage *>*)messageList succ:(V2TIMMessageReadReceiptsSucc)succ fail:(V2TIMFail)fail;
+
+/**
+ * 5.17 获取群消息已读群成员列表（6.1 及其以上版本支持）
+ * @param message 群消息
+ * @param filter  指定拉取已读或未读群成员列表。
+ * @param nextSeq 分页拉取的游标，第一次默认取传 0，后续分页拉传上一次分页拉取成功回调里的 nextSeq。
+ * @param count   分页拉取的个数，最大支持 100 个。
+ *
+ * @note 请注意：
+ * - 该功能为旗舰版功能，[购买旗舰版套餐包](https://buy.cloud.tencent.com/avc?from=17485)后可使用，详见[价格说明](https://cloud.tencent.com/document/product/269/11673?from=17221#.E5.9F.BA.E7.A1.80.E6.9C.8D.E5.8A.A1.E8.AF.A6.E6.83.85)。
+ * - 使用该功能之前，请您先到控制台打开对应的开关，详情参考文档 [群消息已读回执](https://cloud.tencent.com/document/product/269/75343#.E8.AE.BE.E7.BD.AE.E6.94.AF.E6.8C.81.E5.B7.B2.E8.AF.BB.E5.9B.9E.E6.89.A7.E7.9A.84.E7.BE.A4.E7.B1.BB.E5.9E.8B) 。
+ */
+- (void)getGroupMessageReadMemberList:(V2TIMMessage*)message filter:(V2TIMGroupMessageReadMembersFilter)filter nextSeq:(uint64_t)nextSeq count:(uint32_t)count succ:(V2TIMGroupMessageReadMemberListSucc)succ fail:(V2TIMFail)fail;
+
+/**
+ * 5.18 设置消息扩展（6.7 及其以上版本支持，需要您购买旗舰版套餐）
+ * @param message 消息对象，消息需满足三个条件：1、消息发送前需设置 supportMessageExtension 为 YES，2、消息必须是发送成功的状态，3、消息不能是直播群（AVChatRoom）消息。
+ * @param extensions 扩展信息，如果扩展 key 已经存在，则修改扩展的 value 信息，如果扩展 key 不存在，则新增扩展。
+ *
+ * @note
+ * - 扩展 key 最大支持 100 字节，扩展 value 最大支持 1KB，单次最多支持设置 20 个扩展，单条消息最多可设置 300 个扩展。
+ * - 当多个用户同时设置或删除同一个扩展 key 时，只有第一个用户可以执行成功，其它用户会收到 23001 错误码和最新的扩展信息，在收到错误码和扩展信息后，请按需重新发起设置操作。
+ * - 我们强烈建议不同的用户设置不同的扩展 key，这样大部分场景都不会冲突，比如投票、接龙、问卷调查，都可以把自己的 userID 作为扩展 key。
+ */
+- (void)setMessageExtensions:(V2TIMMessage*)message extensions:(NSArray<V2TIMMessageExtension *> *)extensions succ:(V2TIMMessageExtensionsSetSucc)succ fail:(V2TIMFail)fail;
+
+/**
+ * 5.19 获取消息扩展（6.7 及其以上版本支持，需要您购买旗舰版套餐）
+ */
+- (void)getMessageExtensions:(V2TIMMessage*)message succ:(V2TIMMessageExtensionsGetSucc)succ fail:(V2TIMFail)fail;
+
+/**
+ * 5.20 删除消息扩展（6.7 及其以上版本支持，需要您购买旗舰版套餐）
+ * @param keys 消息扩展 key 列表, 单次最大支持删除 20 个消息扩展，如果设置为 nil ，表示删除所有消息扩展
+ *
+ * @note
+ * - 当多个用户同时设置或删除同一个扩展 key 时，只有第一个用户可以执行成功，其它用户会收到 23001 错误码和最新的扩展信息，在收到错误码和扩展信息后，请按需重新发起删除操作。
+ */
+- (void)deleteMessageExtensions:(V2TIMMessage*)message keys:(NSArray<NSString *> *)keys succ:(V2TIMMessageExtensionsDeleteSucc)succ fail:(V2TIMFail)fail;
+
+/**
+ * 5.21 添加消息回应（可以用于实现表情回应）（7.4 及其以上版本支持，需要您购买旗舰版套餐）
+ *
+ *  <p> 表情回应功能是指对某条消息通过表情符号进行互动回应，我们可以看到每种表情的回应人数和回应人列表。
+ *  <p> 目前常见的消息回应展示方式会有如下两种风格：
+ *  <p> 风格一：
+ *  <p>  ----------------------------
+ *  <p> |   lucy, happy birthday!    |
+ *  <p>  ----------------------------
+ *  <p> |   😄 1  💐 2  👍🏻 10        |
+ *  <p>  ----------------------------
+ *  <p> 风格二：
+ *  <p>  ------------------------------------------------
+ *  <p> |   lucy, happy birthday!                        |
+ *  <p>  ------------------------------------------------
+ *  <p> |  😁 bob 💐olivia 🎂david                       |
+ *  <p> |  👍🏻 denny、james、lucy、linda、thomas 等10人     |
+ *  <p>  ------------------------------------------------
+ *  <p>
+ *  <p> 当用户点击某个表情后，会跳转到表情回应详情界面：
+ *  <p>  |  😄   |   💐    |   👍🏻   |
+ *  <p>  |  bob  |  olivia |  lucy   |
+ *  <p>  |  ...  |   ...   |  denny  |
+ *  <p>  |  ...  |   ...   |  ...    |
+ *  <p> 用户可以根据某个表情分页拉取使用该表情的用户信息。
+ *  <p>
+ *  <p> 您可以基于 SDK API 实现表情回应能力:
+ *  <p> 1、调用 addMessageReaction    接口为一条消息添加一个 emoji，添加成功后，emoji 下就会存储当前操作用户。
+ *  <p> 2、调用 removeMessageReaction 接口删除已经添加的 emoji，删除成功后，emoji 下就不再存储当前操作用户。
+ *  <p> 3、调用 getMessageReactions   接口批量拉取多条消息的 emoji 列表，其中每个 emoji 都包含了当前使用者总人数以及前 N（默认 10）个使用者用户资料。
+ *  <p> 4、调用 getAllUserListOfMessageReaction 接口分页拉取消息 emoji 的全量使用者用户资料。
+ *  <p> 5、监听 onRecvMessageReactionsChanged 回调，感知 emoji 的使用者信息变更，该回调会携带 emoji 最新的使用者信息（包含使用者总人数以及前 N 个使用者用户资料）。
+ *  <p>
+ *
+ * @param reactionID 消息回应 ID，在表情回应场景，reactionID 为表情 ID，单条消息最大支持 10 个 Reaction，单个 Reaction 最大支持 100 个用户。
+ *
+ * @note
+ * - 该功能为旗舰版功能，需要您购买旗舰版套餐。
+ * - 如果单条消息 Reaction 数量超过最大限制，调用接口会报 ERR_SVR_MSG_REACTION_COUNT_LIMIT 错误。
+ * - 如果单个 Reaction 用户数量超过最大限制，调用接口会报 ERR_SVR_MSG_REACTION_USER_COUNT_LIMIT 错误。
+ * - 如果 Reaction 已经包含当前用户，调用接口会报 ERR_SVR_MSG_REACTION_ALREADY_CONTAIN_USER 错误。
+ */
+- (void)addMessageReaction:(V2TIMMessage *)message reactionID:(NSString *)reactionID succ:(V2TIMSucc)succ fail:(V2TIMFail)fail;
+
+/**
+ * 5.22 删除消息回应（7.4 及其以上版本支持，需要您购买旗舰版套餐）
+ *
+ * @note
+ * - 如果 Reaction 不存在，调用接口会报 ERR_SVR_MSG_REACTION_NOT_EXISTS 错误。
+ * - 如果 Reaction 不包含当前用户，调用接口会报 ERR_SVR_MSG_REACTION_NOT_CONTAIN_USER 错误。
+ *
+ */
+- (void)removeMessageReaction:(V2TIMMessage *)message reactionID:(NSString *)reactionID succ:(V2TIMSucc)succ fail:(V2TIMFail)fail;
+
+/**
+ * 5.23 批量拉取多条消息回应信息（7.4 及其以上版本支持，需要您购买旗舰版套餐）
+ *
+ * @param messageList 消息列表，一次最大支持 20 条消息，消息必须属于同一个会话。
+ * @param maxUserCountPerReaction 取值范围 【0,10】，每个 Reaction 最多只返回前 10 个用户信息，如需更多用户信息，可以按需调用 getAllUserListOfMessageReaction 接口分页拉取。
+ *
+ */
+- (void)getMessageReactions:(NSArray<V2TIMMessage *> *)messageList maxUserCountPerReaction:(uint32_t)maxUserCountPerReaction succ:(V2TIMGetMessageReactionsSucc)succ fail:(V2TIMFail)fail;
+
+/**
+ * 5.24 分页拉取使用指定消息回应用户信息（7.4 及其以上版本支持，需要您购买旗舰版套餐）
+ *
+ * @param message 消息对象
+ * @param reactionID 消息回应 ID
+ * @param nextSeq 分页拉取的游标，第一次传 0，后续分页传 succ 返回的 nextSeq。
+ * @param count 一次分页最大拉取个数，最大支持 100 个。
+ *
+ */
+- (void)getAllUserListOfMessageReaction:(V2TIMMessage *)message reactionID:(NSString *)reactionID nextSeq:(uint32_t)nextSeq count:(uint32_t)count succ:(V2TIMGetMessageReactionUserListSucc)succ fail:(V2TIMFail)fail;
+
+/**
+ *  5.25 翻译文本消息
+ *
+ *  @param sourceTextList 待翻译文本数组。
+ *  @param source 源语言。可以设置为特定语言或 ”auto“。“auto“ 表示自动识别源语言。传空默认为 ”auto“。
+ *  @param target 目标语言。支持的目标语言有多种，例如：英语-“en“，简体中文-”zh“，法语-”fr“，德语-”de“等。详情请参考文档：[文本翻译语言支持](https://cloud.tencent.com/document/product/269/85380#.E6.96.87.E6.9C.AC.E7.BF.BB.E8.AF.91.E8.AF.AD.E8.A8.80.E6.94.AF.E6.8C.81)。
+ *  @param callback 翻译结果回调。其中 result 的 key 为待翻译文本, value 为翻译后文本。
+ */
+- (void)translateText:(NSArray<NSString *> *)sourceTextList
+       sourceLanguage:(NSString *)source
+       targetLanguage:(NSString *)target
+           completion:(void (^)(int code, NSString *desc, NSDictionary<NSString *, NSString *> *result))callback;
+
+/**
+ *  5.26 标记单聊会话已读（待废弃接口，请使用 cleanConversationUnreadMessageCount 接口）
+ *
+ *  @note 请注意：
+ *  - 该接口调用成功后，自己的未读数会清 0，对端用户会收到 onRecvC2CReadReceipt 回调，回调里面会携带标记会话已读的时间。
+ *  - 从 5.8 版本开始，当 userID 为 nil 时，标记所有单聊会话为已读状态。
+ */
+- (void)markC2CMessageAsRead:(NSString *)userID succ:(V2TIMSucc)succ fail:(V2TIMFail)fail __attribute__((deprecated("use cleanConversationUnreadMessageCount: instead")));
+
+/**
+ *  5.27 标记群组会话已读（待废弃接口，请使用 cleanConversationUnreadMessageCount 接口）
+ *
+ *  @note 请注意：
+ *  - 该接口调用成功后，自己的未读数会清 0。
+ *  - 从 5.8 版本开始，当 groupID 为 nil 时，标记所有群组会话为已读状态。
+ */
+- (void)markGroupMessageAsRead:(NSString *)groupID succ:(V2TIMSucc)succ fail:(V2TIMFail)fail __attribute__((deprecated("use cleanConversationUnreadMessageCount: instead")));
+
+/**
+ *  5.28 标记所有会话为已读（待废弃接口，请使用 cleanConversationUnreadMessageCount 接口）
+ */
+- (void)markAllMessageAsRead:(V2TIMSucc)succ fail:(V2TIMFail)fail __attribute__((deprecated("use cleanConversationUnreadMessageCount: instead")));
+
+@end
 
 /////////////////////////////////////////////////////////////////////////////////
 //
@@ -500,42 +805,47 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 //
 /////////////////////////////////////////////////////////////////////////////////
 /// 高级消息监听器
-@protocol V2TIMAdvancedMsgListener <NSObject>
+V2TIM_EXPORT @protocol V2TIMAdvancedMsgListener <NSObject>
 @optional
 /// 收到新消息
 - (void)onRecvNewMessage:(V2TIMMessage *)msg;
 
-/// 收到消息已读回执（仅单聊有效）
+/// 消息已读回执通知（如果自己发的消息支持已读回执，消息接收端调用了 sendMessageReadReceipts 接口，自己会收到该回调）
+- (void)onRecvMessageReadReceipts:(NSArray<V2TIMMessageReceipt *> *)receiptList;
+
+/// C2C 对端用户会话已读通知（如果对端用户调用 markC2CMessageAsRead 接口，自己会收到该回调，回调只会携带对端 userID 和对端已读 timestamp 信息）
 - (void)onRecvC2CReadReceipt:(NSArray<V2TIMMessageReceipt *> *)receiptList;
 
-/// 收到消息撤回
-- (void)onRecvMessageRevoked:(NSString *)msgID;
+/// 收到消息撤回（从 IMSDK 7.4 版本开始支持）
+- (void)onRecvMessageRevoked:(NSString *)msgID operateUser:(V2TIMUserFullInfo *)operateUser reason:(NSString *)reason;
 
-/// 消息内容被修改（第三方服务回调修改了消息内容）
+/// 消息内容被修改
 - (void)onRecvMessageModified:(V2TIMMessage *)msg;
 
-@end
+/// 消息扩展信息更新
+- (void)onRecvMessageExtensionsChanged:(NSString *)msgID extensions:(NSArray<V2TIMMessageExtension *> *)extensions;
 
-/// C2C 已读回执
-@interface V2TIMMessageReceipt : NSObject
+/// 消息扩展信息被删除
+- (void)onRecvMessageExtensionsDeleted:(NSString *)msgID extensionKeys:(NSArray<NSString *> *)extensionKeys;
 
-/// C2C 消息接收对象
-@property(nonatomic,strong,readonly) NSString * userID;
+/// 消息回应信息更新
+/// 该回调是消息 Reaction 的增量回调，只会携带变更的 Reaction 信息。
+/// 当变更的 Reaction 信息里的 totalUserCount 字段值为 0 时，表明该 Reaction 已经没有用户在使用，您可以在 UI 上移除该 Reaction 的展示。
+- (void)onRecvMessageReactionsChanged:(NSArray<V2TIMMessageReactionChangeInfo *> *)changeList;
 
-/// 已读回执时间，这个时间戳之前的消息都可以认为对方已读
-@property(nonatomic,assign,readonly) time_t timestamp;
-
+/// 收到消息撤回（待废弃接口，请使用 onRecvMessageRevoked:operateUser:reason: 接口）
+- (void)onRecvMessageRevoked:(NSString *)msgID __attribute__((deprecated("use onRecvMessageRevoked:operateUser:reason: instead")));
 @end
 
 /////////////////////////////////////////////////////////////////////////////////
 //                         消息内容详解
 /////////////////////////////////////////////////////////////////////////////////
 /// 高级消息
-@interface V2TIMMessage : NSObject
+V2TIM_EXPORT @interface V2TIMMessage : NSObject
 /// 消息 ID（消息创建的时候为 nil，消息发送的时候会生成）
 @property(nonatomic,strong,readonly) NSString *msgID;
 
-/// 消息时间
+/// 消息的 UTC 时间戳
 @property(nonatomic,strong,readonly) NSDate *timestamp;
 
 /// 消息发送者
@@ -577,7 +887,26 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 @property(nonatomic,assign,readonly) BOOL isRead;
 
 /// 消息对方是否已读（只有 C2C 消息有效）
+/// 该字段为 YES 的条件是消息 timestamp <= 对端标记会话已读的时间
 @property(nonatomic,assign,readonly) BOOL isPeerRead;
+
+/// 消息是否需要已读回执
+/// @note
+/// <p> 群聊消息 6.1 及以上版本支持该特性，需要您先到 IM 控制台配置支持已读回执的群类型。
+/// <p> 单聊消息 6.2 及以上版本支持该特性。
+/// <p> 群聊消息和单聊消息都需要购买旗舰版套餐包。
+@property(nonatomic,assign) BOOL needReadReceipt;
+
+/// 是否支持消息扩展（6.7 及其以上版本支持，需要您购买旗舰版套餐）
+/// 直播群（AVChatRoom）消息不支持该功能。
+/// 您需要先到 IM 控制台配置该功能。
+@property(nonatomic,assign) BOOL supportMessageExtension;
+
+/// 是否是广播消息，仅直播群支持（6.5 及以上版本支持，需要您购买旗舰版套餐）
+@property(nonatomic,assign,readonly) BOOL isBroadcastMessage;
+
+/// 消息优先级（只有 onRecvNewMessage 收到的 V2TIMMessage 获取有效）
+@property(nonatomic,assign,readonly) V2TIMMessagePriority priority;
 
 /// 群消息中被 @ 的用户 UserID 列表（即该消息都 @ 了哪些人）
 @property(nonatomic,strong,readonly) NSMutableArray<NSString *> *groupAtUserList;
@@ -624,14 +953,41 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 /// 消息自定义数据（云端保存，会发送到对端，程序卸载重装后还能拉取到）
 @property(nonatomic,strong) NSData* cloudCustomData;
 
-/// 消息是否不计入会话未读数：默认为 NO，表明需要计入会话未读数，设置为 YES，表明不需要计入会话未读数（5.3.425 及以上版本支持）
+/// 消息是否不计入会话未读数：默认为 NO，表明需要计入会话未读数，设置为 YES，表明不需要计入会话未读数
+/// <p> 5.3.425 及以上版本支持, 会议群（Meeting）默认不支持该字段
 @property(nonatomic,assign) BOOL isExcludedFromUnreadCount;
 
 /// 消息是否不计入会话 lastMsg：默认为 NO，表明需要计入会话 lastMsg，设置为 YES，表明不需要计入会话 lastMsg（5.4.666 及以上版本支持）
 @property(nonatomic,assign) BOOL isExcludedFromLastMessage;
 
+/// 消息是否不过内容审核（包含【本地审核】和【云端审核】）(7.1 及以上版本支持)
+/// 只有在开通【本地审核】或【云端审核】功能后，isExcludedFromContentModeration 设置才有效，设置为 YES，表明不过内容审核，设置为 NO：表明过内容审核。
+///【本地审核】开通流程请参考 [本地审核功能](https://cloud.tencent.com/document/product/269/83795#.E6.9C.AC.E5.9C.B0.E5.AE.A1.E6.A0.B8.E5.8A.9F.E8.83.BD)
+///【云端审核】开通流程请参考 [云端审核功能](https://cloud.tencent.com/document/product/269/83795#.E4.BA.91.E7.AB.AF.E5.AE.A1.E6.A0.B8.E5.8A.9F.E8.83.BD)
+@property(nonatomic,assign) BOOL isExcludedFromContentModeration;
+
+/// 消息自定义审核配置 ID（从 7.8 版本开始支持）
+/// 在开通【云端审核】功能后，您可以请前往 [控制台](https://console.cloud.tencent.com/im) (云端审核 -> 审核配置 -> 自定义配置 -> 添加自定义配置) 获取配置 ID。
+///【自定义审核】配置流程请参考 [云端审核功能]（https://cloud.tencent.com/document/product/269/78633#a5efc9e8-a7ec-40e3-9b18-8ed1910f589c）
+/// @note 该字段需要发消息前设置，仅用于控制发消息时的消息审核策略，其值不会存储在漫游和本地。
+@property(nonatomic,strong) NSString *customModerationConfigurationID;
+
+/// 是否被标记为有安全风险的消息（从 7.4 版本开始支持）
+/// 暂时只支持语音和视频消息。
+/// 只有在开通【云端审核】功能后才生效，【云端审核】开通流程请参考 [云端审核功能](https://cloud.tencent.com/document/product/269/83795#.E4.BA.91.E7.AB.AF.E5.AE.A1.E6.A0.B8.E5.8A.9F.E8.83.BD)。
+/// 如果您发送的语音或视频消息内容不合规，云端异步审核后会触发 SDK 的 onRecvMessageModified 回调，回调里的 message 对象该字段值为 YES。
+@property(nonatomic,assign,readonly) BOOL hasRiskContent;
+
 /// 消息的离线推送信息
 @property(nonatomic,strong,readonly) V2TIMOfflinePushInfo *offlinePushInfo;
+
+/// 消息撤回者（从 7.4 版本开始支持）
+/// 仅当消息为撤回状态时有效
+@property(nonatomic,strong,readonly) V2TIMUserFullInfo *revokerInfo;
+
+/// 消息撤回原因 （从 7.4 版本开始支持）
+/// 仅当消息为撤回状态时有效
+@property(nonatomic,strong,readonly) NSString *revokeReason;
 
 @end
 
@@ -642,7 +998,7 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 //                         
 /////////////////////////////////////////////////////////////////////////////////
 /// 消息元素基类
-@interface V2TIMElem : NSObject
+V2TIM_EXPORT @interface V2TIMElem : NSObject
 
 /// 获取下一个 Elem，如果您的消息有多个 Elem，可以通过当前 Elem 获取下一个 Elem 对象，如果返回值为 nil，表示 Elem 获取结束。
 /// 详细使用方法请参考文档 [消息收发](https://cloud.tencent.com/document/product/269/44490#4.-.E5.A6.82.E4.BD.95.E8.A7.A3.E6.9E.90.E5.A4.9A.E4.B8.AA-elem-.E7.9A.84.E6.B6.88.E6.81.AF.EF.BC.9F)
@@ -661,7 +1017,7 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
  * </pre>
  * 
  * @note
- *  1.该接口只能由 createMessage 创建的 Messsage 对象里的 elem 元素调用。
+ *  1.该接口只能由 createMessage 创建的 Message 对象里的 elem 元素调用。
  *  2.该接口仅支持添加 V2TIMTextElem、V2TIMCustomElem、V2TIMFaceElem 和 V2TIMLocationElem 四类元素。
  */
 - (void)appendElem:(V2TIMElem *)elem;
@@ -671,7 +1027,7 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 //                         文本消息 Elem
 /////////////////////////////////////////////////////////////////////////////////
 /// 文本消息 Elem
-@interface V2TIMTextElem : V2TIMElem
+V2TIM_EXPORT @interface V2TIMTextElem : V2TIMElem
 
 /// 消息文本
 @property(nonatomic,strong) NSString * text;
@@ -682,7 +1038,7 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 //                         自定义消息 Elem
 /////////////////////////////////////////////////////////////////////////////////
 /// 自定义消息 Elem
-@interface V2TIMCustomElem : V2TIMElem
+V2TIM_EXPORT @interface V2TIMCustomElem : V2TIMElem
 
 /// 自定义消息二进制数据
 @property(nonatomic,strong) NSData * data;
@@ -691,7 +1047,7 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 @property(nonatomic,strong) NSString * desc;
 
 /// 自定义消息扩展字段
-@property(nonatomic,strong) NSString * extension;
+@property(nonatomic,strong) NSString * extension NS_SWIFT_NAME(ext);
 
 @end
 
@@ -699,7 +1055,7 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 //                         图片消息 Elem
 /////////////////////////////////////////////////////////////////////////////////
 /// 图片消息Elem
-@interface V2TIMImageElem : V2TIMElem
+V2TIM_EXPORT @interface V2TIMImageElem : V2TIMElem
 
 /// 图片路径（只有发送方可以获取到）
 @property(nonatomic,strong,readonly) NSString * path;
@@ -713,7 +1069,7 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 //                         图片消息 Elem
 /////////////////////////////////////////////////////////////////////////////////
 /// 图片元素
-@interface V2TIMImage : NSObject
+V2TIM_EXPORT @interface V2TIMImage : NSObject
 
 /// 图片 ID，内部标识，可用于外部缓存 key
 @property(nonatomic,strong,readonly) NSString * uuid;
@@ -748,7 +1104,7 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 //                         语音消息 Elem
 /////////////////////////////////////////////////////////////////////////////////
 /// 语音消息 Elem
-@interface V2TIMSoundElem : V2TIMElem
+V2TIM_EXPORT @interface V2TIMSoundElem : V2TIMElem
 
 /// 语音文件路径（只有发送方才能获取到）
 @property(nonatomic,strong,readonly) NSString * path;
@@ -774,13 +1130,23 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
  */
 - (void)downloadSound:(NSString*)path progress:(V2TIMDownLoadProgress)progress succ:(V2TIMSucc)succ fail:(V2TIMFail)fail;
 
+/**
+ *  将语音转成文字（7.4 及以上版本支持）
+ *
+ *  @param language 识别的语言。
+ *
+ *  @note
+ *  - 语音转文字是增值付费功能，处于内测阶段，您可通过 [即时通信 IM 语音转文字插件交流群](https://zhiliao.qq.com/s/c5GY7HIM62CK/cPSYGIIM62CH) 联系我们为您开通体验完整功能。
+ */
+- (void)convertVoiceToText:(NSString *)language completion:(void (^)(int code, NSString *desc, NSString *result))callback;
+
 @end
 
 /////////////////////////////////////////////////////////////////////////////////
 //                         视频消息 Elem
 /////////////////////////////////////////////////////////////////////////////////
 /// 视频消息 Elem
-@interface V2TIMVideoElem : V2TIMElem
+V2TIM_EXPORT @interface V2TIMVideoElem : V2TIMElem
 
 /// 视频文件路径（只有发送方才能获取到）
 @property(nonatomic,strong,readonly) NSString * videoPath;
@@ -842,7 +1208,7 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 //                         文件消息 Elem
 /////////////////////////////////////////////////////////////////////////////////
 /// 文件消息 Elem
-@interface V2TIMFileElem : V2TIMElem
+V2TIM_EXPORT @interface V2TIMFileElem : V2TIMElem
 
 /// 文件路径（只有发送方才能获取到）
 @property(nonatomic,strong,readonly) NSString * path;
@@ -874,7 +1240,7 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 //                         地理位置 Elem
 /////////////////////////////////////////////////////////////////////////////////
 /// 地理位置 Elem
-@interface V2TIMLocationElem : V2TIMElem
+V2TIM_EXPORT @interface V2TIMLocationElem : V2TIMElem
 
 /// 地理位置描述信息
 @property(nonatomic,strong) NSString * desc;
@@ -891,7 +1257,7 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 //                         表情消息 Elem
 /////////////////////////////////////////////////////////////////////////////////
 /// 表情消息 Elem
-@interface V2TIMFaceElem : V2TIMElem
+V2TIM_EXPORT @interface V2TIMFaceElem : V2TIMElem
 /**
  *  表情索引，用户自定义
  *  1. 表情消息由 TIMFaceElem 定义，SDK 并不提供表情包，如果开发者有表情包，可使用 index 存储表情在表情包中的索引，由用户自定义，或者直接使用 data 存储表情二进制信息以及字符串 key，都由用户自定义，SDK 内部只做透传。
@@ -908,7 +1274,7 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 //                         合并消息 Elem
 /////////////////////////////////////////////////////////////////////////////////
 /// 合并消息 Elem
-@interface V2TIMMergerElem : V2TIMElem
+V2TIM_EXPORT @interface V2TIMMergerElem : V2TIMElem
 
 /// 合并消息里面又包含合并消息我们称之为合并嵌套，合并嵌套层数不能超过 100 层，如果超过限制，layersOverLimit 会返回 YES，title 和 abstractList 会返回 nil，downloadMergerMessage 会返回 ERR_MERGER_MSG_LAYERS_OVER_LIMIT 错误码。
 @property(nonatomic,assign,readonly) BOOL layersOverLimit;
@@ -929,7 +1295,7 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 /////////////////////////////////////////////////////////////////////////////////
 
 /// 群 tips 消息会存消息列表，群里所有的人都会展示，比如 xxx 进群，xxx 退群，xxx 群资料被修改了等
-@interface V2TIMGroupTipsElem : V2TIMElem
+V2TIM_EXPORT @interface V2TIMGroupTipsElem : V2TIMElem
 
 /// 群组 ID
 @property(nonatomic,strong,readonly) NSString * groupID;
@@ -955,7 +1321,7 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 @end
 
 /// 群 tips，群变更信息
-@interface V2TIMGroupChangeInfo : NSObject
+V2TIM_EXPORT @interface V2TIMGroupChangeInfo : NSObject
 
 /// 变更类型
 @property(nonatomic,assign,readonly) V2TIMGroupInfoChangeType type;
@@ -967,13 +1333,23 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 /// 因为历史遗留原因，如果只修改了群自定义字段，当前消息不会存漫游和 DB
 @property(nonatomic,strong,readonly) NSString * key;
 
-/// 根据变更类型表示不同的值，当前只有 type = V2TIM_GROUP_INFO_CHANGE_TYPE_SHUT_UP_ALL 时有效
+/// 根据变更类型表示不同的值，当 type = V2TIM_GROUP_INFO_CHANGE_TYPE_SHUT_UP_ALL  或者 V2TIM_GROUP_INFO_CHANGE_TYPE_ENABLE_PERMISSION_GROUP 时有效
 @property(nonatomic,assign,readonly) BOOL boolValue;
+
+/// 根据变更类型表示不同的值
+/// @note 仅针对以下类型有效：
+/// - 从 6.5 版本开始，当 type 为 V2TIM_GROUP_INFO_CHANGE_TYPE_RECEIVE_MESSAGE_OPT 时，该字段标识了群消息接收选项发生了变化，其取值详见 @V2TIMReceiveMessageOpt；
+/// - 从 6.5 版本开始，当 type 为 V2TIM_GROUP_INFO_CHANGE_TYPE_GROUP_ADD_OPT 时，该字段标识了申请加群审批选项发生了变化，其取值详见 @V2TIMGroupAddOpt;
+/// - 从 7.1 版本开始，当 type 为 V2TIM_GROUP_INFO_CHANGE_TYPE_GROUP_APPROVE_OPT 时，该字段标识了邀请进群审批选项发生了变化，取值类型详见 @V2TIMGroupAddOpt。
+@property(nonatomic,assign,readonly) uint32_t intValue;
+
+/// 根据变更类型表示不同的值，当前只有 type = V2TIM_GROUP_INFO_CHANGE_TYPE_GROUP_PERMISSION 时有效
+@property(nonatomic,assign,readonly) uint64_t uint64Value;
 
 @end
 
 ///群tips，成员变更信息
-@interface V2TIMGroupMemberChangeInfo : NSObject
+V2TIM_EXPORT @interface V2TIMGroupMemberChangeInfo : NSObject
 
 /// 变更用户
 @property(nonatomic,strong,readonly) NSString * userID;
@@ -985,16 +1361,119 @@ typedef NS_ENUM(NSInteger, V2TIMKeywordListMatchType) {
 
 
 /////////////////////////////////////////////////////////////////////////////////
+//                         消息已读回执
+/////////////////////////////////////////////////////////////////////////////////
+//
+/// 消息已读回执
+V2TIM_EXPORT @interface V2TIMMessageReceipt : NSObject
+/// 消息 ID
+@property(nonatomic,strong,readonly) NSString * msgID;
+
+/// C2C 消息接收对象
+@property(nonatomic,strong,readonly) NSString * userID;
+
+/// C2C 对端消息是否已读
+@property(nonatomic,assign,readonly) BOOL isPeerRead;
+
+/// C2C 对端用户标记会话已读的时间
+@property(nonatomic,assign,readonly) time_t timestamp;
+
+/// 群 ID
+@property(nonatomic,strong,readonly) NSString * groupID;
+
+/// 群消息已读人数
+@property(nonatomic,assign,readonly) int readCount;
+
+/// 群消息未读人数
+@property(nonatomic,assign,readonly) int unreadCount;
+
+@end
+
+/////////////////////////////////////////////////////////////////////////////////
+//                         消息扩展
+/////////////////////////////////////////////////////////////////////////////////
+//
+/// 消息扩展信息
+V2TIM_EXPORT @interface V2TIMMessageExtension : NSObject
+
+/// 消息扩展信息 key
+@property(nonatomic, strong) NSString *extensionKey;
+
+/// 消息扩展信息 value
+@property(nonatomic, strong) NSString *extensionValue;
+
+@end
+
+/// 消息扩展操作结果
+V2TIM_EXPORT @interface V2TIMMessageExtensionResult : NSObject
+/// 返回码
+@property(nonatomic,assign,readonly) int32_t resultCode;
+
+/// 返回信息
+@property(nonatomic,strong,readonly) NSString *resultInfo;
+
+/// 扩展信息
+@property(nonatomic,strong,readonly) V2TIMMessageExtension *extension NS_SWIFT_NAME(ext);
+
+@end
+
+/////////////////////////////////////////////////////////////////////////////////
+//                         消息回应
+/////////////////////////////////////////////////////////////////////////////////
+/// 消息回应信息
+V2TIM_EXPORT @interface V2TIMMessageReaction : NSObject
+/// 消息回应 ID
+@property(nonatomic,strong,readonly) NSString *reactionID;
+
+/// 使用同一个 reactionID 回应消息的总的用户个数
+@property(nonatomic,assign,readonly) uint32_t totalUserCount;
+
+/// 使用同一个 reactionID 回应消息的部分用户列表（用户列表数量取决于调用 getMessageReactions 接口时设置的 maxUserCountPerReaction 值）
+@property(nonatomic,strong,readonly) NSArray<V2TIMUserInfo *> * partialUserList;
+
+/// 自己是否使用了该 reaction
+@property(nonatomic,assign,readonly) BOOL reactedByMyself;
+
+@end
+
+/// 批量拉取消息回应结果
+V2TIM_EXPORT @interface V2TIMMessageReactionResult : NSObject
+/// 返回码
+@property(nonatomic,assign,readonly) int32_t resultCode;
+
+/// 返回信息
+@property(nonatomic,strong,readonly) NSString *resultInfo;
+
+/// 消息 ID
+@property(nonatomic,strong,readonly) NSString *msgID;
+
+/// 消息回应列表
+@property(nonatomic,strong,readonly) NSArray<V2TIMMessageReaction *> *reactionList;
+
+@end
+
+/// 消息回应变更信息
+V2TIM_EXPORT @interface V2TIMMessageReactionChangeInfo : NSObject
+
+/// 消息 ID
+@property(nonatomic,strong,readonly) NSString *msgID;
+
+/// 消息回应变更列表
+@property(nonatomic,strong,readonly) NSArray<V2TIMMessageReaction *> *reactionList;
+
+@end
+
+/////////////////////////////////////////////////////////////////////////////////
 //                         苹果 APNS 离线推送
 /////////////////////////////////////////////////////////////////////////////////
-
-/// 接收时不会播放声音
-extern NSString * const kIOSOfflinePushNoSound;
-/// 接收时播放系统声音
-extern NSString * const kIOSOfflinePushDefaultSound;
+//
+/// 接收到离线推送时不会播放声音
+V2TIM_EXTERN NSString * const kIOSOfflinePushNoSound;
+/// 接收到离线推送时播放系统声音
+V2TIM_EXTERN NSString * const kIOSOfflinePushDefaultSound;
 
 /// 自定义消息 push。
-@interface V2TIMOfflinePushInfo : NSObject
+V2TIM_EXPORT @interface V2TIMOfflinePushInfo : NSObject
 
 /// 离线推送展示的标题。
 @property(nonatomic,strong) NSString * title;
@@ -1010,22 +1489,45 @@ extern NSString * const kIOSOfflinePushDefaultSound;
 /// 是否关闭推送（默认开启推送）。
 @property(nonatomic,assign) BOOL disablePush;
 
+/// iOS 离线推送的类型（仅对 iOS 生效）
+/// 默认值是 V2TIM_IOS_OFFLINE_PUSH_TYPE_APNS
+@property(nonatomic,assign) V2TIMIOSOfflinePushType iOSPushType;
+
+/// 离线推送忽略 badge 计数（仅对 iOS 生效），
+/// 如果设置为 YES，在 iOS 接收端，这条消息不会使 APP 的应用图标未读计数增加。
+@property(nonatomic,assign) BOOL ignoreIOSBadge;
+
 /// 离线推送声音设置（仅对 iOS 生效），
 /// 当 iOSSound = kIOSOfflinePushNoSound，表示接收时不会播放声音。
 /// 当 iOSSound = kIOSOfflinePushDefaultSound，表示接收时播放系统声音。
 /// 如果要自定义 iOSSound，需要先把语音文件链接进 Xcode 工程，然后把语音文件名（带后缀）设置给 iOSSound。
 @property(nonatomic,strong) NSString * iOSSound;
 
-/// 离线推送忽略 badge 计数（仅对 iOS 生效），
-/// 如果设置为 YES，在 iOS 接收端，这条消息不会使 APP 的应用图标未读计数增加。
-@property(nonatomic,assign) BOOL ignoreIOSBadge;
+/// 离线推送声音设置（仅对 Android 生效, 仅 imsdk 6.1 及以上版本支持）
+/// 只有华为和谷歌手机支持设置铃音提示，小米铃音设置请您参照：https://dev.mi.com/console/doc/detail?pId=1278%23_3_0
+/// 另外，谷歌手机 FCM 推送在 Android 8.0 及以上系统设置声音提示，需要在 channel 通道配置，请参照接口 AndroidFCMChannelID
+/// AndroidSound: Android 工程里 raw 目录中的铃声文件名，不需要后缀名。
+@property(nonatomic,strong) NSString * AndroidSound;
 
-/// 离线推送设置 OPPO 手机 8.0 系统及以上的渠道 ID（仅对 Android 生效）。
-@property(nonatomic,strong) NSString *AndroidOPPOChannelID;
+/// 离线推送设置 OPPO 手机推送的 ChannelID, 仅支持 8.0 系统及以上。（应用配置接入 OPPO 推送的必须要设置）
+@property(nonatomic,strong) NSString * AndroidOPPOChannelID;
 
-/// 离线推送设置 VIVO 手机 （仅对 Android 生效）。
+/// 离线推送设置 Google FCM 手机推送的 ChannelID, 仅支持 8.0 系统及以上。
+@property(nonatomic,strong) NSString * AndroidFCMChannelID;
+
+/// 离线推送设置小米手机推送的 ChannelID, 仅支持 8.0 系统及以上。
+@property(nonatomic,strong) NSString *AndroidXiaoMiChannelID;
+
+/// 离线推送设置 VIVO 推送消息分类 (待废弃接口，VIVO 推送服务于 2023 年 4 月 3 日优化消息分类规则，推荐使用 AndroidVIVOCategory 设置消息类别)
 /// VIVO 手机离线推送消息分类，0：运营消息，1：系统消息。默认取值为 1 。
 @property(nonatomic,assign) NSInteger AndroidVIVOClassification;
+
+/// 离线推送设置 VIVO 推送消息类别，详见：https://dev.vivo.com.cn/documentCenter/doc/359。(VIVO 推送服务于 2023 年 4 月 3 日优化消息分类规则，推荐使用 AndroidVIVOCategory 设置消息类别，不需要再关注和设置 AndroidVIVOClassification)
+@property(nonatomic,strong) NSString *AndroidVIVOCategory;
+
+/// 离线推送设置华为推送消息分类，详见：https://developer.huawei.com/consumer/cn/doc/development/HMSCore-Guides/message-classification-0000001149358835
+@property(nonatomic,strong) NSString *AndroidHuaWeiCategory;
+
 @end
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -1033,19 +1535,40 @@ extern NSString * const kIOSOfflinePushDefaultSound;
 //                         用户消息接收选项
 //
 /////////////////////////////////////////////////////////////////////////////////
-@interface V2TIMReceiveMessageOptInfo:NSObject
+V2TIM_EXPORT @interface V2TIMReceiveMessageOptInfo : NSObject
+
 /// 用户 ID
-@property(nonatomic, strong) NSString *userID;
+@property(nonatomic,strong) NSString *userID;
+
+/// 获取消息免打扰开始时间：小时
+@property(nonatomic,assign) NSInteger startHour;
+
+/// 获取消息免打扰开始时间：分钟
+@property(nonatomic,assign) NSInteger startMinute;
+
+/// 获取消息免打扰开始时间：秒
+@property(nonatomic,assign) NSInteger startSecond;
+
+/**
+ *  获取消息免打扰开始的 UTC 时间戳
+ *  @note
+ *  - 如果返回的 startTimeStamp 大于 0，您可以直接使用
+ *  - 如果返回的 startTimeStamp 等于 0，您需要调用 getStartHour()、getStartMinute()、getStartSecond() 来获取免打扰的相对开始时间
+ */
+@property(nonatomic,assign) NSInteger startTimeStamp;
+
+/// 获取免打扰持续时长，单位：秒
+@property(nonatomic,assign) NSInteger duration;
 
 /// 消息接收选项
-@property(nonatomic, assign) V2TIMReceiveMessageOpt receiveOpt;
+@property(nonatomic,assign) V2TIMReceiveMessageOpt receiveOpt;
 @end
 
 /////////////////////////////////////////////////////////////////////////////////
 //                         消息搜索
 /////////////////////////////////////////////////////////////////////////////////
 /// 消息搜索参数
-@interface V2TIMMessageSearchParam : NSObject
+V2TIM_EXPORT @interface V2TIMMessageSearchParam : NSObject
 /**
  * 关键字列表，最多支持5个。当消息发送者以及消息类型均未指定时，关键字列表必须非空；否则，关键字列表可以为空。
  */
@@ -1068,7 +1591,7 @@ extern NSString * const kIOSOfflinePushDefaultSound;
 /**
  * 搜索“全部会话”还是搜索“指定的会话”：
  * <p> 如果设置 conversationID == nil，代表搜索全部会话。
- * <p> 如果设置 conversationID != nil，代表搜索指定会话。
+ * <p> 如果设置 conversationID != nil，代表搜索指定会话。会话唯一 ID, C2C 单聊组成方式：[NSString stringWithFormat:@"c2c_%@",userID]；群聊组成方式为 [NSString stringWithFormat:@"group_%@",groupID]
  */
 @property(nonatomic,strong) NSString *conversationID;
 
@@ -1084,21 +1607,38 @@ extern NSString * const kIOSOfflinePushDefaultSound;
  * - 首次调用：通过参数 pageSize = 10, pageIndex = 0 调用 searchLocalMessage，从结果回调中的 totalCount 可以获知总共有多少条结果。
  * - 计算页数：可以获知总页数：totalPage = (totalCount % pageSize == 0) ? (totalCount / pageSize) : (totalCount / pageSize + 1) 。
  * - 再次调用：可以通过指定参数 pageIndex （pageIndex < totalPage）返回后续页号的结果。
+ *
+ * @note 仅对接口 searchLocalMessages 生效
 */
-@property(nonatomic, assign) NSUInteger pageIndex;
+@property(nonatomic,assign) NSUInteger pageIndex;
 
-/// 每页结果数量：用于分页展示查找结果，如不希望分页可将其设置成 0，但如果结果太多，可能会带来性能问题。
-@property(nonatomic, assign) NSUInteger pageSize;
+/**
+ * 每页结果数量：用于分页展示查找结果，如不希望分页可将其设置成 0，但如果结果太多，可能会带来性能问题。
+ * @note 仅对接口 searchLocalMessages 生效
+ */
+@property(nonatomic,assign) NSUInteger pageSize;
+
+/**
+ * 每次云端搜索返回结果的条数。
+ * @note 仅对接口 searchCloudMessages 生效
+ */
+@property(nonatomic,assign) NSUInteger searchCount;
+
+/**
+ * 每次云端搜索的起始位置。第一次填空字符串，续拉时填写 V2TIMMessageSearchResult 中的返回值。
+ * @note 仅对接口 searchCloudMessages 生效
+ */
+@property(nonatomic,strong) NSString *searchCursor;
 
 @end
 
-@interface V2TIMMessageSearchResultItem : NSObject
+V2TIM_EXPORT @interface V2TIMMessageSearchResultItem : NSObject
 
 /// 会话ID
 @property(nonatomic,copy) NSString *conversationID;
 
 /// 当前会话一共搜索到了多少条符合要求的消息
-@property(nonatomic, assign) NSUInteger messageCount;
+@property(nonatomic,assign) NSUInteger messageCount;
 
 /**
  * 满足搜索条件的消息列表
@@ -1111,19 +1651,24 @@ extern NSString * const kIOSOfflinePushDefaultSound;
 
 @end
 
-@interface V2TIMMessageSearchResult : NSObject
+V2TIM_EXPORT @interface V2TIMMessageSearchResult : NSObject
 
 /**
  * 如果您本次搜索【指定会话】，那么返回满足搜索条件的消息总数量；
  * 如果您本次搜索【全部会话】，那么返回满足搜索条件的消息所在的所有会话总数量。
  */
-@property(nonatomic, assign) NSUInteger totalCount;
+@property(nonatomic,assign) NSUInteger totalCount;
 
 /**
  * 如果您本次搜索【指定会话】，那么返回结果列表只包含该会话结果；
  * 如果您本次搜索【全部会话】，那么对满足搜索条件的消息根据会话 ID 分组，分页返回分组结果；
  */
-@property(nonatomic, strong) NSArray<V2TIMMessageSearchResultItem *> *messageSearchResultItems;
+@property(nonatomic,strong) NSArray<V2TIMMessageSearchResultItem *> *messageSearchResultItems;
+
+/**
+ * 下一次云端搜索的起始位置。
+ */
+@property(nonatomic,strong) NSString *searchCursor;
 
 @end
 
@@ -1132,7 +1677,7 @@ extern NSString * const kIOSOfflinePushDefaultSound;
 //                         消息拉取
 /////////////////////////////////////////////////////////////////////////////////
 
-@interface V2TIMMessageListGetOption : NSObject
+V2TIM_EXPORT @interface V2TIMMessageListGetOption : NSObject
 
 /**
  * 拉取消息类型，可以设置拉取本地、云端更老或者更新的消息
@@ -1157,6 +1702,9 @@ extern NSString * const kIOSOfflinePushDefaultSound;
 /// 拉取消息数量
 @property(nonatomic,assign) NSUInteger count;
 
+/// 拉取的消息类型集合，getType 为 V2TIM_GET_LOCAL_OLDER_MSG 和 V2TIM_GET_LOCAL_NEWER_MSG 有效，传 nil 表示拉取全部类型消息，取值详见 @V2TIMElemType。
+@property(nonatomic,strong) NSArray<NSNumber *> * messageTypeList;
+
 /**
  * 拉取消息的起始消息
  *
@@ -1173,7 +1721,7 @@ extern NSString * const kIOSOfflinePushDefaultSound;
  * -  如果未设置拉取的时间范围，SDK 默认使用会话的最新消息作为拉取起点。
  */
 @property(nonatomic,strong) V2TIMMessage *lastMsg;
-@property (nonatomic, assign) NSUInteger lastMsgSeq;
+@property(nonatomic,assign) NSUInteger lastMsgSeq;
 
 /**
  * 拉取消息的时间范围
@@ -1188,10 +1736,21 @@ extern NSString * const kIOSOfflinePushDefaultSound;
  * - 如果 getType 指定了朝消息时间更老的方向拉取，则时间范围表示为 [getTimeBegin-getTimePeriod, getTimeBegin]
  * - 如果 getType 指定了朝消息时间更新的方向拉取，则时间范围表示为 [getTimeBegin, getTimeBegin+getTimePeriod]
  */
-@property (nonatomic, assign) NSUInteger getTimeBegin;
-@property (nonatomic, assign) NSUInteger getTimePeriod;
+@property(nonatomic,assign) NSUInteger getTimeBegin;
+@property(nonatomic,assign) NSUInteger getTimePeriod;
 
-
+/**
+ * 拉取群组历史消息时，支持按照消息序列号 seq 拉取（从 7.1 版本开始有效）
+ *
+ * @note
+ * - 仅拉取群组历史消息时有效；
+ * - 消息序列号 seq 可以通过 V2TIMMessage 对象的 seq 字段获取；
+ * - 当 getType 设置为从云端拉取时，会将本地存储消息列表与云端存储消息列表合并后返回；如果无网络，则直接返回本地消息列表；
+ * - 当 getType 设置为从本地拉取时，直接返回本地的消息列表；
+ * - 当 getType 设置为拉取更旧的消息时，消息列表按照时间逆序，也即消息按照时间戳从大往小的顺序排序；
+ * - 当 getType 设置为拉取更新的消息时，消息列表按照时间顺序，也即消息按照时间戳从小往大的顺序排序。
+ */
+@property(nonatomic,strong) NSArray<NSNumber *> *messageSeqList;
 
 @end
 

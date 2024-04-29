@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		48DF2C46253FE1B800BC522F /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = 48DF2C45253FE1B800BC522F /* NotificationService.m */; };
 		48DF2C4A253FE1B800BC522F /* pushservice.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 48DF2C42253FE1B800BC522F /* pushservice.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		83CC9781F54AF93B209AC157 /* Pods_TUIKitDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB6D5FC6689E7035C0A2D6CE /* Pods_TUIKitDemo.framework */; };
 		935F7C67293615770033D099 /* LaunchScreen.strings in Resources */ = {isa = PBXBuildFile; fileRef = 935F7BF1293615760033D099 /* LaunchScreen.strings */; };
 		935F7C68293615770033D099 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 935F7BF3293615760033D099 /* LaunchScreen.storyboard */; };
 		935F7C69293615770033D099 /* Main.strings in Resources */ = {isa = PBXBuildFile; fileRef = 935F7BF5293615760033D099 /* Main.strings */; };
@@ -49,6 +50,7 @@
 		938345EA2A8A0EBA0072977E /* SettingController.m in Sources */ = {isa = PBXBuildFile; fileRef = 938345D02A8A0EBA0072977E /* SettingController.m */; };
 		938345EB2A8A0EBA0072977E /* ConversationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 938345D22A8A0EBA0072977E /* ConversationController.m */; };
 		938345FA2A8A135D0072977E /* TUIStartPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 938345F92A8A135D0072977E /* TUIStartPageViewController.m */; };
+		AC4A2F4431C10660B0D01A6F /* Pods_pushservice.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 044C21FF5E6CF4E9FCA29D3D /* Pods_pushservice.framework */; };
 		CE0BDFA9221D53C60083E1B0 /* Bugly.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE0BDFA8221D53C60083E1B0 /* Bugly.framework */; };
 		CE48482027019FC800F53B16 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CE48481F27019FC800F53B16 /* main.m */; };
 /* End PBXBuildFile section */
@@ -87,12 +89,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		044C21FF5E6CF4E9FCA29D3D /* Pods_pushservice.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_pushservice.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		17CEC78E41C4775904D2A92B /* Pods-pushservice.dailybuild.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-pushservice.dailybuild.xcconfig"; path = "Target Support Files/Pods-pushservice/Pods-pushservice.dailybuild.xcconfig"; sourceTree = "<group>"; };
 		30722D34BE1DD45B2ACBD3BB /* Pods-TUIKitDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TUIKitDemo.release.xcconfig"; path = "Target Support Files/Pods-TUIKitDemo/Pods-TUIKitDemo.release.xcconfig"; sourceTree = "<group>"; };
 		480C761722DCA3C3007495EC /* ImSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImSDK.framework; path = ../ImSDK/Framework/ImSDK.framework; sourceTree = "<group>"; };
 		48DF2C42253FE1B800BC522F /* pushservice.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = pushservice.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		48DF2C44253FE1B800BC522F /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
 		48DF2C45253FE1B800BC522F /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
 		48DF2C47253FE1B800BC522F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		566088669910106B48012CDC /* Pods-pushservice.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-pushservice.release.xcconfig"; path = "Target Support Files/Pods-pushservice/Pods-pushservice.release.xcconfig"; sourceTree = "<group>"; };
 		8D757F7318DC3B846A870603 /* Pods-TUIKitDemo.dailybuild.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TUIKitDemo.dailybuild.xcconfig"; path = "Target Support Files/Pods-TUIKitDemo/Pods-TUIKitDemo.dailybuild.xcconfig"; sourceTree = "<group>"; };
 		933346772AD3A09000E3FC83 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Main.strings; sourceTree = "<group>"; };
 		933346782AD3A09100E3FC83 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -180,6 +185,7 @@
 		CE48481D27019FC800F53B16 /* publishToGit */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = publishToGit; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE48481F27019FC800F53B16 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		CF014482216E1A4900C12E35 /* TUIKitDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TUIKitDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E694F6196690BF233F8F63B0 /* Pods-pushservice.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-pushservice.debug.xcconfig"; path = "Target Support Files/Pods-pushservice/Pods-pushservice.debug.xcconfig"; sourceTree = "<group>"; };
 		FFA1E52ABCCAE78D060D1E3D /* Pods-TUIKitDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TUIKitDemo.debug.xcconfig"; path = "Target Support Files/Pods-TUIKitDemo/Pods-TUIKitDemo.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -188,6 +194,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC4A2F4431C10660B0D01A6F /* Pods_pushservice.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -203,6 +210,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE0BDFA9221D53C60083E1B0 /* Bugly.framework in Frameworks */,
+				83CC9781F54AF93B209AC157 /* Pods_TUIKitDemo.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -215,6 +223,9 @@
 				FFA1E52ABCCAE78D060D1E3D /* Pods-TUIKitDemo.debug.xcconfig */,
 				30722D34BE1DD45B2ACBD3BB /* Pods-TUIKitDemo.release.xcconfig */,
 				8D757F7318DC3B846A870603 /* Pods-TUIKitDemo.dailybuild.xcconfig */,
+				E694F6196690BF233F8F63B0 /* Pods-pushservice.debug.xcconfig */,
+				566088669910106B48012CDC /* Pods-pushservice.release.xcconfig */,
+				17CEC78E41C4775904D2A92B /* Pods-pushservice.dailybuild.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -461,6 +472,7 @@
 				480C761722DCA3C3007495EC /* ImSDK.framework */,
 				CE0BDFA8221D53C60083E1B0 /* Bugly.framework */,
 				CB6D5FC6689E7035C0A2D6CE /* Pods_TUIKitDemo.framework */,
+				044C21FF5E6CF4E9FCA29D3D /* Pods_pushservice.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -472,9 +484,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 48DF2C4B253FE1B800BC522F /* Build configuration list for PBXNativeTarget "pushservice" */;
 			buildPhases = (
+				8471C04200A58D4197816C07 /* [CP] Check Pods Manifest.lock */,
 				48DF2C3E253FE1B800BC522F /* Sources */,
 				48DF2C3F253FE1B800BC522F /* Frameworks */,
 				48DF2C40253FE1B800BC522F /* Resources */,
+				DB459DB85CE31D64EE1E0455 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -632,6 +646,28 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		8471C04200A58D4197816C07 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-pushservice-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		A15B15EAD25E5927BA6CD470 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -663,6 +699,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\ncd TUIKitDemo/Util\nsed -i \"\" \"s/public_SDKAPPID =.*/public_SDKAPPID = 0;/\" GenerateTestUserSig.h\nsed -i \"\" \"s/singapore_SDKAPPID =.*/singapore_SDKAPPID = 0;/\" GenerateTestUserSig.h\nsed -i \"\" \"s/korea_SDKAPPID.*/korea_SDKAPPID = 0;/\" GenerateTestUserSig.h\nsed -i \"\" \"s/germany_SDKAPPID.*/germany_SDKAPPID = 0;/\" GenerateTestUserSig.h\nsed -i \"\" \"s/public_SECRETKEY.*/public_SECRETKEY = @\\\"\\\";/\" GenerateTestUserSig.h\nsed -i \"\" \"s/singapore_SECRETKEY.*/singapore_SECRETKEY = @\\\"\\\";/\" GenerateTestUserSig.h\nsed -i \"\" \"s/korea_SECRETKEY.*/korea_SECRETKEY = @\\\"\\\";/\" GenerateTestUserSig.h\nsed -i \"\" \"s/germany_SECRETKEY.*/germany_SECRETKEY = @\\\"\\\";/\" GenerateTestUserSig.h\n\nsed -i \"\" \"s/kHttpServerAddr.*/kHttpServerAddr @\\\"\\\"/\" TCConstants.h\nsed -i \"\" \"s/kHttpSmsImageAddr.*/kHttpSmsImageAddr @\\\"\\\"/\" TCConstants.h\nsed -i \"\" \"s/kHttpSmsLoginAddr_public.*/kHttpSmsLoginAddr_public @\\\"\\\"/\" TCConstants.h\nsed -i \"\" \"s/kHttpSmsLoginAddr_singapore.*/kHttpSmsLoginAddr_singapore @\\\"\\\"/\" TCConstants.h\nsed -i \"\" \"s/DEFAULT_ELK_HOST.*/DEFAULT_ELK_HOST @\\\"\\\"/\" TCConstants.h\nsed -i \"\" \"s/LicenceURL.*/LicenceURL @\\\"\\\"/\" TCConstants.h\nsed -i \"\" \"s/LicenceKey.*/LicenceKey @\\\"\\\"/\" TCConstants.h\n";
+		};
+		DB459DB85CE31D64EE1E0455 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-pushservice/Pods-pushservice-resources.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 		E2087E99F4A5E0DC06409893 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -807,6 +858,7 @@
 /* Begin XCBuildConfiguration section */
 		48DF2C4C253FE1B800BC522F /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E694F6196690BF233F8F63B0 /* Pods-pushservice.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
@@ -832,6 +884,7 @@
 		};
 		48DF2C4D253FE1B800BC522F /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 566088669910106B48012CDC /* Pods-pushservice.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
@@ -854,6 +907,7 @@
 		};
 		48DF2C4E253FE1B800BC522F /* DailyBuild */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 17CEC78E41C4775904D2A92B /* Pods-pushservice.dailybuild.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Tencent Technology (Shenzhen) Co., Ltd";
 				CODE_SIGN_STYLE = Automatic;
@@ -1003,7 +1057,7 @@
 					"$(SRCROOT)/../../../source/project/ios/imsdk/ImSDK/include/**",
 				);
 				INFOPLIST_FILE = TUIKitDemo/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "腾讯云IM";
+				INFOPLIST_KEY_CFBundleDisplayName = "云通信IM";
 				INFOPLIST_KEY_NSCameraUsageDescription = "云通讯IM需要访问您的相机权限，开启后才能发送图片或视频";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "云通讯IM需要访问您的麦克风权限，开启后才能发送语音";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "云通讯IM需要访问您的相册权限，开启后保存图片或视频";
@@ -1154,12 +1208,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = TUIKitDemo/TUIKitDemo.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMPRESS_PNG_FILES = NO;
 				CURRENT_PROJECT_VERSION = 1.1.1.1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = F8A3GH6Q4W;
+				DEVELOPMENT_TEAM = DJ84VS9Q34;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1181,7 +1235,7 @@
 					"$(SRCROOT)/../../../source/project/ios/imsdk/ImSDK/include/**",
 				);
 				INFOPLIST_FILE = TUIKitDemo/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "腾讯云IM";
+				INFOPLIST_KEY_CFBundleDisplayName = "云通信IM";
 				INFOPLIST_KEY_NSCameraUsageDescription = "云通讯IM需要访问您的相机权限，开启后才能发送图片或视频";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "云通讯IM需要访问您的麦克风权限，开启后才能发送语音";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "云通讯IM需要访问您的相册权限，开启后保存图片或视频";
@@ -1197,9 +1251,9 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.tencent.tuikit.demo.xa;
+				PRODUCT_BUNDLE_IDENTIFIER = com.dreambigcraeer.timsdk;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = tuikitdemo_dev;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_PNG_TEXT = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "TUIKitDemo-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -1248,7 +1302,7 @@
 					"$(SRCROOT)/../../../source/project/ios/imsdk/ImSDK/include/**",
 				);
 				INFOPLIST_FILE = TUIKitDemo/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "腾讯云IM";
+				INFOPLIST_KEY_CFBundleDisplayName = "云通信IM";
 				INFOPLIST_KEY_NSCameraUsageDescription = "云通讯IM需要访问您的相机权限，开启后才能发送图片或视频";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "云通讯IM需要访问您的麦克风权限，开启后才能发送语音";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "云通讯IM需要访问您的相册权限，开启后保存图片或视频";

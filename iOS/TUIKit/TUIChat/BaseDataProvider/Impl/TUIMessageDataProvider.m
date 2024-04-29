@@ -587,7 +587,7 @@ static Class<TUIMessageDataProviderDataSource> gDataSourceClass = nil;
         return nil;
     }
     NSError *error = nil;
-    NSDictionary *param = [NSJSONSerialization JSONObjectWithData:message.customElem.data options:NSJSONReadingAllowFragments error:&error];
+    NSMutableDictionary *param = [NSJSONSerialization JSONObjectWithData:message.customElem.data options:NSJSONReadingAllowFragments error:&error];
     if (error) {
         NSLog(@"parse customElem data error: %@", error);
         return nil;
@@ -596,17 +596,31 @@ static Class<TUIMessageDataProviderDataSource> gDataSourceClass = nil;
         return nil;
     }
     
-    NSString *businessID = param[BussinessID];
+    NSMutableDictionary *newParam = [[NSMutableDictionary alloc] initWithDictionary:param];
+    
+    NSString *customType;
+    id ct = newParam[@"customType"];
+    if ([ct isKindOfClass: [NSNumber class]]) {
+        customType = ((NSNumber *)ct).stringValue;
+    } else if ([ct isKindOfClass: [NSString class]]) {
+        customType = ct;
+    }
+    
+    if (customType != nil && customType.length > 0) {
+        [newParam setObject:customType forKey:BussinessID];
+    }
+    
+    NSString *businessID = newParam[BussinessID];
     if (businessID.length > 0 && [businessID isKindOfClass:[NSString class]]) {
         return businessID;
     } else {
-        if ([param.allKeys containsObject:BussinessID_CustomerService]) {
+        if ([newParam.allKeys containsObject:BussinessID_CustomerService]) {
             NSString *src = param[BussinessID_Src_CustomerService];
             if (src.length > 0 && [src isKindOfClass:[NSString class]]) {
                 return [NSString stringWithFormat:@"%@%@", BussinessID_CustomerService, src];
             }
         } else if ([param.allKeys containsObject:BussinessID_ChatBot]) {
-            NSNumber *src = param[BussinessID_Src_ChatBot];
+            NSNumber *src = newParam[BussinessID_Src_ChatBot];
             if (src && [src isKindOfClass:[NSNumber class]]) {
                 return [NSString stringWithFormat:@"%@%@", BussinessID_ChatBot, src];
             }

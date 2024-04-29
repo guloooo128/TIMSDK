@@ -1,0 +1,6 @@
+framework module TUIChatBotPlugin {
+  umbrella header "TUIChatBotPlugin-umbrella.h"
+
+  export *
+  module * { export * }
+}

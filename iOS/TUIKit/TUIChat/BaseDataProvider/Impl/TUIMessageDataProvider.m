@@ -596,8 +596,8 @@ static Class<TUIMessageDataProviderDataSource> gDataSourceClass = nil;
         return nil;
     }
     
+    // Gollum Fix：修复原来的消息里面没有 BussinessID 的问题
     NSMutableDictionary *newParam = [[NSMutableDictionary alloc] initWithDictionary:param];
-    
     NSString *customType;
     id ct = newParam[@"customType"];
     if ([ct isKindOfClass: [NSNumber class]]) {

@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TUIChatDataProvider : TUIChatBaseDataProvider
 
+@property(nonatomic, strong) NSMutableArray<TUIInputMoreCellData *> *customInputMoreMenus;
+
 #pragma mark - CellData
 - (NSMutableArray<TUIInputMoreCellData *> *)moreMenuCellDataArray:(NSString *)groupID
                                                            userID:(NSString *)userID

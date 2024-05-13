@@ -22,7 +22,6 @@
 @interface TUIChatDataProvider ()
 @property(nonatomic, strong) TUIInputMoreCellData *welcomeInputMoreMenu;
 
-@property(nonatomic, strong) NSMutableArray<TUIInputMoreCellData *> *customInputMoreMenus;
 @property(nonatomic, strong) NSArray<TUIInputMoreCellData *> *builtInInputMoreMenus;
 
 @property(nonatomic, strong) NSArray<TUICustomActionSheetItem *> *customInputMoreActionItemList;

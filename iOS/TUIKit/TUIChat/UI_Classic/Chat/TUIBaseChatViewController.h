@@ -18,6 +18,7 @@
 #import "TUIBaseMessageController.h"
 #import "TUIChatConversationModel.h"
 #import "TUIInputController.h"
+#import "TUIChatDataProvider.h"
 @class TUIBaseChatViewController;
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -98,6 +99,8 @@
  *  It is usually used to push to another VC and need to scroll to the bottom after returning.
  */
 @property(nonatomic, assign) BOOL needScrollToBottom;
+
+@property(nonatomic, strong) TUIChatDataProvider *dataProvider;
 
 - (void)sendMessage:(V2TIMMessage *)message;
 

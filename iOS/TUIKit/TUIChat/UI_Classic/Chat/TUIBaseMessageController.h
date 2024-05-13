@@ -92,6 +92,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)reloadAndScrollToBottomOfMessage:(NSString *)messageID;
 - (void)scrollCellToBottomOfMessage:(NSString *)messageID;
 
+- (void)reloadDataWith:(TUIMessageCellData *)cellData;
+
 @end
 
 NS_ASSUME_NONNULL_END

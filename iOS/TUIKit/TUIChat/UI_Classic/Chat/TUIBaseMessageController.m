@@ -1701,4 +1701,16 @@ ReceiveReadMsgWithGroupID:(NSString *)groupID
     }
 }
 
+- (void)reloadDataWith:(TUIMessageCellData *)cellData {
+    [self reloadUIMessage:cellData];
+    [self changeMsg:cellData status:Msg_Status_Succ];    
+    NSDictionary *param = @{
+        TUICore_TUIChatNotify_SendMessageSubKey_Code : @0,
+        TUICore_TUIChatNotify_SendMessageSubKey_Desc : @"",
+        TUICore_TUIChatNotify_SendMessageSubKey_Message : cellData.innerMessage
+    };
+    [TUICore notifyEvent:TUICore_TUIChatNotify subKey:TUICore_TUIChatNotify_SendMessageSubKey object:self param:param];
+    [self scrollToBottom: true];
+}
+
 @end

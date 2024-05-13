@@ -24,7 +24,6 @@
 #import "TUIBaseMessageController.h"
 #import "TUICameraViewController.h"
 #import "TUIChatConfig.h"
-#import "TUIChatDataProvider.h"
 #import "TUIChatMediaDataProvider.h"
 #import "TUIChatModifyMessageHelper.h"
 #import "TUICloudCustomDataTypeCenter.h"
@@ -60,7 +59,7 @@ static UIView *gTopExentsionView;
 @property(nonatomic, strong) TUINaviBarIndicatorView *titleView;
 @property(nonatomic, strong) TUIMessageMultiChooseView *multiChooseView;
 @property(nonatomic, assign) BOOL responseKeyboard;
-@property(nonatomic, strong) TUIChatDataProvider *dataProvider;
+
 
 @property(nonatomic, assign) BOOL firstAppear;
 
